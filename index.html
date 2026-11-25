@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Camp Asia - The Adventure Begins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&amp;family=Outfit:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style data-keep>
+        :root {
+            --camp-red-light: #FF4D4D;
+            --camp-red-dark: #E21F26;
+            --camp-yellow: #facc15;
+            --camp-dark: #1a1a1a;
+            color-scheme: light;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        body { 
+            font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; 
+            background-color: var(--camp-red-light);
+            background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 30%), radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 30%);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1, h2, h3, .bungee { font-family: 'Bungee', Impact, 'Arial Black', sans-serif; }
+
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .bg-element { position: fixed; z-index: -1; opacity: 0.25; pointer-events: none; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(15deg); } }
+
+        .bubble-card { 
+            background: var(--camp-red-dark);
+            border-radius: 2rem;
+            box-shadow: 0 15px 0px rgba(0, 0, 0, 0.2);
+            border: 6px solid var(--camp-dark);
+            color: white;
+            width: 100%;
+            max-width: 550px;
+            z-index: 10;
+            position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            .bubble-card { border-radius: 3.5rem; border-width: 8px; box-shadow: 0 25px 0px rgba(0, 0, 0, 0.2); max-width: 700px; }
+        }
+
+        .btn-option {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid var(--camp-dark);
+            border-radius: 1.25rem;
+            box-shadow: 0 4px 0 var(--camp-dark);
+            width: 100%;
+            text-align: left;
+            padding: 0.6rem 1rem;
+            background: white;
+            color: black;
+            font-weight: 700;
+            font-size: 0.85rem;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .btn-option { border-width: 4px; border-radius: 2rem; box-shadow: 0 6px 0 var(--camp-dark); padding: 1rem 1.5rem; font-size: 1.05rem; }
+        }
+
+        .btn-option:hover { background: #f9f9f9; transform: translateY(-2px); box-shadow: 0 6px 0 var(--camp-dark); }
+        .btn-option:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--camp-dark); }
+
+        .age-card {
+            border: 3px solid var(--camp-dark); border-radius: 1.5rem; box-shadow: 0 6px 0 var(--camp-dark);
+            transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem;
+            cursor: pointer;
+        }
+        .age-card:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--camp-dark); }
+
+        .progress-container { border: 3px solid var(--camp-dark); border-radius: 1rem; overflow: hidden; background: var(--camp-dark); height: 1.25rem; }
+        .btn-back { background: #333; border: 2px solid black; border-radius: 0.75rem; color: white; font-family: 'Bungee', Impact, 'Arial Black', sans-serif; font-size: 0.7rem; padding: 0.25rem 0.75rem; box-shadow: 0 3px 0 black; }
+        .avatar-box { width: 100px; height: 100px; background: white; border: 4px solid black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; margin: 0 auto; box-shadow: 0 6px 0 black; }
+        .camp-logo-placeholder { background: white; color: var(--camp-red-dark); font-family: 'Bungee', Impact, 'Arial Black', sans-serif; padding: 10px 25px; border-radius: 2rem; border: 4px solid black; display: inline-block; margin-bottom: 25px; font-size: 1.5rem; box-shadow: 0 5px 0 black; }
+        .btn-action { background: var(--camp-yellow); border: 4px solid black; padding: 1rem 2.5rem; border-radius: 1.25rem; font-family: 'Bungee', Impact, 'Arial Black', sans-serif; color: black; box-shadow: 0 8px 0 #000; transition: all 0.1s; text-transform: uppercase; display: inline-block; cursor: pointer; }
+        
+        .cat-badge { display: inline-block; padding: 4px 12px; border-radius: 99px; background: #eee; color: #333; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 8px; font-family: 'Bungee', Impact, 'Arial Black', sans-serif; letter-spacing: 0.05em; border: 2px solid black; }
+
+        .btn-share { background: var(--camp-yellow); border: 3px solid black; padding: 0.75rem 1.5rem; border-radius: 1rem; font-family: 'Bungee', Impact, 'Arial Black', sans-serif; color: black; box-shadow: 0 5px 0 #000; transition: all 0.1s; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; margin-top: 1rem; width: 100%; cursor: pointer; }
+        .btn-share:active { transform: translateY(2px); box-shadow: 0 2px 0 black; }
+
+        #share-toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: black; color: white; padding: 12px 24px; border-radius: 99px; font-family: 'Bungee', Impact, 'Arial Black', sans-serif;
+            font-size: 12px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+        }
+        #share-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ADMIN EDITOR */
+        #adm { display: none; position: fixed; inset: 0; z-index: 2000; background: #fff7f5; color: #1a1a1a; overflow: auto; font-family: 'Outfit', system-ui, sans-serif; padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .adm-bar { position: sticky; top: 0; z-index: 2; background: var(--camp-red-dark); color: #fff; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; border-bottom: 4px solid #1a1a1a; }
+        .adm-bar h2 { font-family: 'Bungee', Impact, sans-serif; font-size: 1rem; margin-right: auto; }
+        #adm button, .adm-open { font-weight: 800; border: 3px solid #1a1a1a; border-radius: .75rem; padding: .4rem .8rem; background: #fff; color: #1a1a1a; cursor: pointer; }
+        #adm .pri, .adm-open { background: var(--camp-yellow); }
+        #adm .dng { background: #fecaca; }
+        #adm input, #adm select, #adm textarea { border: 2px solid #1a1a1a; border-radius: .5rem; padding: .35rem .5rem; width: 100%; background: #fff; color: #1a1a1a; font: inherit; }
+        #adm label { display: block; font-weight: 700; font-size: .8rem; margin: .6rem 0 .15rem; }
+        .adm-wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+        .adm-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+        .adm-card { background: #fff; border: 3px solid #1a1a1a; border-radius: 1rem; padding: 12px; }
+        .adm-card.off { opacity: .55; }
+        .adm-chip { display: inline-block; font-size: .7rem; font-weight: 800; border: 2px solid #1a1a1a; border-radius: 99px; padding: 1px 8px; margin: 2px 2px 0 0; background: #eee; color: #1a1a1a; }
+        .adm-msg { background: #fde68a; border: 2px solid #1a1a1a; border-radius: .75rem; padding: 8px 12px; margin-bottom: 12px; font-weight: 700; }
+        .adm-ov { position: fixed; inset: 0; z-index: 5; background: rgba(0,0,0,.6); overflow: auto; padding: 16px; }
+        .adm-modal { background: #fff; max-width: 680px; margin: 0 auto; border: 4px solid #1a1a1a; border-radius: 1rem; padding: 16px; }
+        .adm-err { color: #b91c1c; font-weight: 700; min-height: 1.2em; }
+        .adm-open { position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 1500; }
+        .adm-pal { display: none; max-height: 260px; overflow: auto; border: 2px solid #1a1a1a; border-radius: .5rem; padding: 6px 8px; margin-top: 8px; background: #fff; }
+        .adm-pal b { display: block; font-size: .72rem; margin: 8px 0 2px; color: #444; }
+        #adm .adm-pal button.em { border: 2px solid transparent; border-radius: .6rem; padding: 0; width: 42px; height: 42px; font-size: 1.5rem; line-height: 1; background: #fff; }
+        #adm .adm-pal button.em:hover { background: #fef08a; border-color: #1a1a1a; }
+        .adm-pal { max-height: none; overflow: visible; box-shadow: 0 6px 0 rgba(0,0,0,.15); }
+        .adm-tabs { display: flex; gap: 4px; overflow-x: auto; padding: 2px 0 8px; white-space: nowrap; }
+        #adm .adm-tabs button.tab { flex: none; padding: .2rem .65rem; font-size: .75rem; border-width: 2px; border-radius: 99px; }
+        #adm .adm-tabs button.tab.on { background: var(--camp-yellow); }
+        .adm-grid-em { display: flex; flex-wrap: wrap; max-height: 210px; overflow-y: auto; }
+    
+        /* THEMED DROPDOWNS AND FIELDS */
+        #adm select.dd-native { display: none; }
+        .dd { position: relative; }
+        #adm .dd-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; background: #fff; color: #1a1a1a; border: 3px solid #1a1a1a; border-radius: 1rem; box-shadow: 0 4px 0 #1a1a1a; padding: .5rem .9rem; font-weight: 800; font-size: .95rem; cursor: pointer; transition: transform .1s, box-shadow .1s, background .1s; }
+        #adm .dd-btn:hover { background: #fffbe6; }
+        #adm .dd-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1a1a1a; }
+        .dd-chev { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--camp-red-dark); border: 2px solid #1a1a1a; position: relative; }
+        .dd-chev::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border-right: 3px solid #fff; border-bottom: 3px solid #fff; transform: translate(-50%, -70%) rotate(45deg); transition: transform .15s; }
+        .dd.open .dd-chev::after { transform: translate(-50%, -30%) rotate(225deg); }
+        .dd-list { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 50; background: #fff; border: 3px solid #1a1a1a; border-radius: 1rem; box-shadow: 0 8px 0 rgba(0,0,0,.2); overflow: hidden auto; max-height: 260px; }
+        .dd.open .dd-list { display: block; animation: fadeIn .15s ease-out; }
+        #adm .dd-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: 0; border-bottom: 2px solid #eee; border-radius: 0; box-shadow: none; background: #fff; padding: .6rem .9rem; font-weight: 700; }
+        #adm .dd-opt:last-child { border-bottom: 0; }
+        #adm .dd-opt:hover { background: var(--camp-yellow); }
+        #adm .dd-opt.sel { background: var(--camp-red-dark); color: #fff; }
+        #adm .dd-opt.sel::after { content: "\2713"; font-weight: 900; }
+        #adm input:not([type=checkbox]), #adm textarea { border: 3px solid #1a1a1a; border-radius: .9rem; box-shadow: 0 3px 0 #1a1a1a; padding: .45rem .75rem; }
+        #adm input:not([type=checkbox]):focus, #adm textarea:focus { outline: none; background: #fffbe6; }
+        .adm-pal { border: 3px solid #1a1a1a; border-radius: 1rem; box-shadow: 0 8px 0 rgba(0,0,0,.2); }
+    </style>
+</head>
+<body>
+<div class="bg-element top-10 left-10 text-6xl">🚲</div>
+<div class="bg-element top-40 left-1/4 text-5xl" style="animation-delay: -2s;">🛹</div>
+<div class="bg-element top-20 right-20 text-5xl">🔭</div>
+<div class="bg-element top-60 right-1/4 text-6xl" style="animation-delay: -4s;">🎮</div>
+<div class="bg-element bottom-10 left-20 text-6xl">🎨</div>
+<div class="bg-element bottom-40 left-1/3 text-5xl" style="animation-delay: -1s;">🏀</div>
+<div class="bg-element bottom-20 right-10 text-5xl">🧪</div>
+<div class="bg-element bottom-60 right-1/3 text-6xl" style="animation-delay: -5s;">💻</div>
+<div id="share-toast">LINK COPIED!</div>
+<div id="app-container" class="bubble-card overflow-hidden">
+        <div id="header-nav" class="hidden p-4 md:p-6 pb-0 flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <button onclick="handleBack()" class="btn-back uppercase">← Back</button>
+            </div>
+            <div class="progress-container relative">
+                <div id="progress-bar" class="h-full bg-yellow-400 transition-all duration-500" style="width: 0%"></div>
+                <div id="progress-text" class="absolute inset-0 flex items-center justify-center text-[8px] md:text-[10px] bungee text-white tracking-widest uppercase">1 of 10</div>
+            </div>
+        </div>
+
+        <div id="quiz-content" class="p-4 md:p-12">
+            <!-- START SCREEN -->
+            <div id="start-screen" class="text-center fade-in">
+                <div class="camp-logo-placeholder">CAMP ASIA</div>
+                <div id="front-wrap" class="hidden" style="margin: -8px 0 18px"><span id="front-header" class="bungee uppercase text-xs md:text-sm tracking-widest px-4 py-2 rounded-full inline-block" style="background:#facc15;color:#1a1a1a;border:3px solid #1a1a1a;box-shadow:0 4px 0 #1a1a1a"></span></div>
+                <h1 class="text-3xl md:text-5xl text-white mb-4 bungee leading-tight uppercase">START YOUR ADVENTURE</h1>
+                <p class="text-white/90 mb-8 font-bold italic text-lg uppercase tracking-widest">DISCOVER YOUR BEST CAMP MATCH</p>
+                <button onclick="showAgeScreen()" class="btn-action text-2xl">Let’s Go!</button>
+            </div>
+
+            <!-- AGE SELECTION SCREEN -->
+            <div id="age-screen" class="hidden fade-in text-center">
+                <h2 class="text-2xl text-white mb-8 bungee uppercase">SELECT YOUR AGE</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="setAge(3, 4)" class="age-card bg-blue-500 text-white">
+                        <div class="text-3xl">🎈</div><div class="bungee text-xs">3-4 YRS</div>
+                    </button>
+                    <button onclick="setAge(5, 6)" class="age-card bg-green-500 text-white">
+                        <div class="text-3xl">🎨</div><div class="bungee text-xs">5-6 YRS</div>
+                    </button>
+                    <button onclick="setAge(7, 8)" class="age-card bg-teal-500 text-white">
+                        <div class="text-3xl">🛹</div><div class="bungee text-xs">7-8 YRS</div>
+                    </button>
+                    <button onclick="setAge(9, 12)" class="age-card bg-purple-500 text-white">
+                        <div class="text-3xl">🚀</div><div class="bungee text-xs">9-12 YRS</div>
+                    </button>
+                    <button onclick="setAge(13, 16)" class="age-card bg-orange-500 text-white col-span-2">
+                        <div class="text-3xl">⚡</div><div class="bungee text-xs">13-16 YRS</div>
+                    </button>
+                </div>
+                <button onclick="resetToStart()" class="mt-6 bungee text-white text-[10px] underline uppercase opacity-60">← Back to Menu</button>
+            </div>
+
+            <!-- QUESTION SCREEN -->
+            <div id="question-screen" class="hidden fade-in">
+                <div id="question-number" class="bg-black text-yellow-400 bungee text-lg inline-block px-2 py-1 rounded-lg mb-2 md:mb-4">01</div>
+                <h2 id="question-text" class="text-base md:text-2xl font-extrabold text-white mb-4 md:mb-6 leading-tight italic">...</h2>
+                <div id="options-container" class="flex flex-col"></div>
+            </div>
+
+            <!-- RESULT SCREEN -->
+            <div id="result-screen" class="hidden fade-in text-center">
+                <div id="result-avatar" class="avatar-box">👤</div>
+                <div class="h-6"></div>
+                <h1 id="result-camp" class="text-2xl md:text-4xl text-white bungee mb-6 uppercase leading-tight">...</h1>
+                <div class="bg-white p-6 rounded-3xl border-4 border-black text-left mb-4">
+                    <div id="result-cat-tag" class="cat-badge">CATEGORY</div>
+                    <p id="result-description" class="text-black font-bold mb-4"></p>
+                    <p id="result-note" class="hidden text-[10px] font-bold uppercase tracking-wider text-red-600 mb-3" style="margin-top:-8px"></p>
+                    <a id="result-link" href="#" target="_blank" class="btn-action w-full text-center block text-sm">VIEW THIS CAMP</a>
+                    
+                    <!-- SHARE BUTTON -->
+                    <button id="share-btn" onclick="shareResult()" class="btn-share">
+                        <span>SHARE RESULT</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <h3 id="alts-title" class="bungee text-white text-xs mb-3 uppercase">Your Backup Squad</h3>
+                <div class="grid grid-cols-3 gap-2 mb-6" id="alternatives-list"></div>
+                <button onclick="resetQuiz()" class="bungee text-white text-[10px] underline uppercase opacity-60">RESTART ADVENTURE</button>
+            </div>
+        </div>
+    </div>
+<script type="application/json" id="camp-data">{"settings":{"siteUrl":"https://claude.ai/artifact/FsvfA79XtQ9c6Nd6hg9qDE","seasons":["Winter Camp","Spring Camp","Summer Camp","Fall Camp"],"currentSeason":"","categoryNames":{"Multi Activity":"Discovery Mix","Get Physical":"Active Sports","Be Creative":"Creative Studios","Clever Stuff":"Curious Minds","Tech Savvy":"Tech Explorers"},"showHiddenResult":true,"showHiddenBackups":false,"frontHeader":"Winter Camp"},"camps":[{"id":"multi_activity","name":"Multi-Activity 3-4","icon":"🎡","category":"Multi Activity","minAge":3,"maxAge":4,"desc":"A daily mix of arts and crafts, drama, active games and hands-on discoveries. No experience needed, just curiosity!","url":"https://www.campasia.asia/holiday-camps/multi-activity/multi-activity-1.html","active":true,"seasons":[],"toddler":true,"actions":["Trying a bit of everything","Rotating through different zones","Swapping sports for arts","Exploring variety","A mix of everything","Testing different skills","Changing activities daily"],"toddlerAnswers":["Running through a colorful obstacle course","Balls, hoops, and sticky craft paper","Playing a big game of follow-the-leader","A fast explorer ready for a race","Painting a messy, beautiful masterpiece","To the playground for some big jumps","Trying three different things in one day"]},{"id":"c_mwbqnmeo","name":"Multi-Activity 5-6","icon":"🎡","category":"Multi Activity","minAge":5,"maxAge":6,"desc":"A daily mix of arts and crafts, drama, active games and hands-on discoveries. No experience needed, just curiosity!","url":"https://www.campasia.asia/holiday-camps/multi-activity/multi-activity-1.html","active":true,"seasons":[],"toddler":false,"actions":["Trying a bit of everything","Rotating through different zones","Swapping sports for arts","Exploring variety","A mix of everything","Testing different skills","Changing activities daily"],"toddlerAnswers":["Running through a colorful obstacle course","Balls, hoops, and sticky craft paper","Playing a big game of follow-the-leader","A fast explorer ready for a race","Painting a messy, beautiful masterpiece","To the playground for some big jumps","Trying three different things in one day"]},{"id":"c_mwbqnetk","name":"Multi-Activity 7-8","icon":"🎡","category":"Multi Activity","minAge":7,"maxAge":8,"desc":"A daily mix of arts and crafts, drama, active games and hands-on discoveries. No experience needed, just curiosity!","url":"https://www.campasia.asia/holiday-camps/multi-activity/multi-activity-1.html","active":true,"seasons":[],"toddler":false,"actions":["Trying a bit of everything","Rotating through different zones","Swapping sports for arts","Exploring variety","A mix of everything","Testing different skills","Changing activities daily"],"toddlerAnswers":["Running through a colorful obstacle course","Balls, hoops, and sticky craft paper","Playing a big game of follow-the-leader","A fast explorer ready for a race","Painting a messy, beautiful masterpiece","To the playground for some big jumps","Trying three different things in one day"]},{"id":"multi_adventure","name":"Young Adventurers 9-12","icon":"🏕️","category":"Multi Activity","minAge":9,"maxAge":12,"desc":"Multi-Activity for older kids: outdoor survival skills, map reading, team challenges and a weekly excursion that build confidence and independence.","url":"https://www.campasia.asia/holiday-camps/multi-activity/young-adventurers.html","active":false,"seasons":[],"toddler":false,"actions":["Building survival shelters","Trekking through the wild","Learning outdoor safety","Mastering teamwork challenges","Navigating the great outdoors","Camping skills 101","Brave exploration"],"toddlerAnswers":[]},{"id":"multi_stem","name":"Stem Explorers 9-12","icon":"🧬","category":"Multi Activity","minAge":9,"maxAge":12,"desc":"A new STEM discipline each day, from coding and LEGO robotics to game design and engineering projects.","url":"https://www.campasia.asia/holiday-camps/multi-activity/stem-explorers.html","active":false,"seasons":[],"toddler":false,"actions":["Building bridge models","Testing chemistry reactions","Engineering tall towers","Physics experiments","Scientific method testing","Hands-on maker projects","Solving tech puzzles"],"toddlerAnswers":[]},{"id":"multi_xperience","name":"Multi-Xperience 5-12","icon":"🎢","category":"Multi Activity","minAge":5,"maxAge":12,"desc":"Themed days of outdoor exploration, nature crafts, cooking and STEM fun at City Sprouts in Pasir Ris. A 3- or 5-day camp held off campus.","url":"https://www.campasia.asia/holiday-camps/multi-activity/multi-xperience.html","active":false,"seasons":[],"toddler":false,"actions":["Going on field trips","Special guest workshops","City exploration","Unique daily themes","Adventure outings","New hobby testing","Behind-the-scenes access"],"toddlerAnswers":[]},{"id":"c_mwbs7die","name":"Future City 6-8","icon":"🏙️","category":"Multi Activity","minAge":6,"maxAge":8,"desc":"Become young architects, engineers and city leaders! Design a greener, sustainable city with hands-on experiments, from flood prevention to urban farming.","url":"https://www.campasia.asia/holiday-camps/multi-activity/future-city.html","active":true,"seasons":[],"toddler":false,"actions":["Sketching a greener city","Designing eco-friendly buildings","Planning flood prevention systems","Testing water filtration","Growing food on an urban farm","Planning parks and transport","Presenting my future city plan"],"toddlerAnswers":[]},{"id":"parkour","name":"Parkour 7-13","icon":"🏃","category":"Get Physical","minAge":7,"maxAge":13,"desc":"A week of jumping, climbing, vaulting and balancing that builds strength, focus and confidence with skilled instructors.","url":"https://www.campasia.asia/holiday-camps/get-physical/parkour.html","active":true,"seasons":[],"toddler":false,"actions":["Jumping over obstacles","Learning urban agility","Practicing safe landings","Mastering wall runs","Fluid movement mastery","Gravity-defying leaps","Precision balance training"],"toddlerAnswers":[]},{"id":"super_basketball","name":"Super Basketball 7-16","icon":"🏀","category":"Get Physical","minAge":7,"maxAge":16,"desc":"An intensive week of drills, workshops and games to build skills, teamwork and confidence on the court.","url":"https://www.campasia.asia/holiday-camps/get-physical/super-basketball.html","active":true,"seasons":[],"toddler":false,"actions":["Dribbling past defenders","Practicing 3-pointer shots","Running court drills","Mastering the slam dunk","Team offense strategies","Layup perfection","Hoops mastery"],"toddlerAnswers":[]},{"id":"super_gymnastics","name":"Super Gymnastics 5-12","icon":"🤸","category":"Get Physical","minAge":5,"maxAge":12,"desc":"Floor, bars, beam and trampoline fun that builds strength, flexibility and confidence at every level.","url":"https://www.campasia.asia/holiday-camps/get-physical/super-gymnastics.html","active":true,"seasons":[],"toddler":false,"actions":["Tumbling on the mats","Balancing on the beam","Learning floor routines","Vaulting through the air","Strength and flexibility","Gymnastic artistry","Perfecting the flip"],"toddlerAnswers":[]},{"id":"super_soccer","name":"Super Soccer 5-14","icon":"⚽","category":"Get Physical","minAge":5,"maxAge":14,"desc":"Skills, drills and match play with daily prizes and a Friday mini World Cup, for beginners to elite players.","url":"https://www.campasia.asia/holiday-camps/get-physical/super-soccer.html","active":true,"seasons":[],"toddler":false,"actions":["Scoring a winning goal","Dribbling through cones","Defensive wall building","Penalty kick practice","Field awareness drills","Pinpoint passing","Agility on the ball"],"toddlerAnswers":[]},{"id":"super_swim","name":"Super Swim 9-12","icon":"🏊","category":"Get Physical","minAge":9,"maxAge":12,"desc":"High-performance training for competitive swimmers: race-focused pool sessions, dryland strength and video analysis. Swimmers need 25m of freestyle, backstroke and breaststroke to join.","url":"https://www.campasia.asia/holiday-camps/get-physical/super-swim.html","active":true,"seasons":[],"toddler":false,"actions":["Perfecting the breaststroke","Diving into deep water","Increasing lap speed","Water safety drills","Stroke refinement","Aquatic confidence","Efficient breathing techniques"],"toddlerAnswers":[]},{"id":"drama_academy","name":"Drama Academy 4-5","icon":"🎭","category":"Be Creative","minAge":4,"maxAge":5,"desc":"Games, improvisation, storytelling and acting that build confidence and creativity, ending with a stage showcase on Friday.","url":"https://www.campasia.asia/holiday-camps/be-creative/drama-academy.html","active":false,"seasons":[],"toddler":true,"actions":["Stepping into the spotlight","Practicing stage voice","Improvising a scene","Character development","Monologue mastery","Theater performance","Emoting for the audience"],"toddlerAnswers":["Putting on a magical crown and cape","A puppet that wants to tell us a story","Pretending we are all animals in the jungle","A silly character making funny faces","Using our voices to make different sounds","To the story-tree to act out a book","Showing everyone my favorite pretend character"]},{"id":"c_mwbrmfqt","name":"Drama Academy 6-8","icon":"🎭","category":"Be Creative","minAge":6,"maxAge":8,"desc":"Games, improvisation, storytelling and acting that build confidence and creativity, ending with a stage showcase on Friday.","url":"https://www.campasia.asia/holiday-camps/be-creative/drama-academy.html","active":true,"seasons":[],"toddler":false,"actions":["Stepping into the spotlight","Practicing stage voice","Improvising a scene","Character development","Monologue mastery","Theater performance","Emoting for the audience"],"toddlerAnswers":["Putting on a magical crown and cape","A puppet that wants to tell us a story","Pretending we are all animals in the jungle","A silly character making funny faces","Using our voices to make different sounds","To the story-tree to act out a book","Showing everyone my favorite pretend character"]},{"id":"c_mwbrnlfe","name":"Drama Academy 9-12","icon":"🎭","category":"Be Creative","minAge":9,"maxAge":12,"desc":"Games, improvisation, storytelling and acting that build confidence and creativity, ending with a stage showcase on Friday.","url":"https://www.campasia.asia/holiday-camps/be-creative/drama-academy.html","active":false,"seasons":[],"toddler":false,"actions":["Stepping into the spotlight","Practicing stage voice","Improvising a scene","Character development","Monologue mastery","Theater performance","Emoting for the audience"],"toddlerAnswers":["Putting on a magical crown and cape","A puppet that wants to tell us a story","Pretending we are all animals in the jungle","A silly character making funny faces","Using our voices to make different sounds","To the story-tree to act out a book","Showing everyone my favorite pretend character"]},{"id":"passion_art","name":"Passion for Art 6-8","icon":"🎨","category":"Be Creative","minAge":6,"maxAge":8,"desc":"Painting, drawing, ceramics and recycled art, plus art history and famous styles, ending in a gallery exhibition.","url":"https://www.campasia.asia/holiday-camps/be-creative/passion-for-art.html","active":true,"seasons":[],"toddler":false,"actions":["Mixing oil paints","Sculpting with clay","Canvas design","Mixed media collage","Artistic sketching","Color theory practice","Creative exhibition"],"toddlerAnswers":[]},{"id":"c_mwbrqtx4","name":"Passion for Art 9-12","icon":"🎨","category":"Be Creative","minAge":9,"maxAge":12,"desc":"Painting, drawing, ceramics and recycled art, plus art history and famous styles, ending in a gallery exhibition.","url":"https://www.campasia.asia/holiday-camps/be-creative/passion-for-art.html","active":true,"seasons":[],"toddler":false,"actions":["Mixing oil paints","Sculpting with clay","Canvas design","Mixed media collage","Artistic sketching","Color theory practice","Creative exhibition"],"toddlerAnswers":[]},{"id":"super_chef","name":"Super Chef 6-16","icon":"👨‍🍳","category":"Be Creative","minAge":6,"maxAge":16,"desc":"Hands-on cooking with creative recipes, teamwork and confidence-building kitchen skills, with a cooking showcase to finish.","url":"https://www.campasia.asia/holiday-camps/be-creative/super-chef.html","active":true,"seasons":[],"toddler":false,"actions":["Whisking and baking","Plating gourmet meals","Knife skill training","Flavor profile mixing","Kitchen safety","International recipes","Pastry arts"],"toddlerAnswers":[]},{"id":"lets_dance","name":"Let’s Dance 4-5","icon":"💃","category":"Be Creative","minAge":4,"maxAge":5,"desc":"Learn hip-hop, street jazz and popular dance moves, building rhythm and confidence for a grand finale performance.","url":"https://www.campasia.asia/holiday-camps/be-creative/lets-dance.html","active":false,"seasons":[],"toddler":true,"actions":["Matching the tempo","Learning hip-hop steps","Choreographing a routine","Expressive movement","Stage presence training","Grooving to the music","Dance coordination"],"toddlerAnswers":["Wiggling and jumping to a happy beat","Shiny ribbons that twirl when we spin","Clapping our hands and stomping our feet together","A superstar dancer making cool moves","Moving slowly like floating bubbles","To the stage for a mini-parade","Learning how to slide and shake my hips"]},{"id":"c_mwbrtpcr","name":"Let’s Dance 6-8","icon":"💃","category":"Be Creative","minAge":6,"maxAge":8,"desc":"Learn hip-hop, street jazz and popular dance moves, building rhythm and confidence for a grand finale performance.","url":"https://www.campasia.asia/holiday-camps/be-creative/lets-dance.html","active":false,"seasons":[],"toddler":false,"actions":["Matching the tempo","Learning hip-hop steps","Choreographing a routine","Expressive movement","Stage presence training","Grooving to the music","Dance coordination"],"toddlerAnswers":["Wiggling and jumping to a happy beat","Shiny ribbons that twirl when we spin","Clapping our hands and stomping our feet together","A superstar dancer making cool moves","Moving slowly like floating bubbles","To the stage for a mini-parade","Learning how to slide and shake my hips"]},{"id":"c_mwbru73q","name":"Let’s Dance 9-12","icon":"💃","category":"Be Creative","minAge":9,"maxAge":12,"desc":"Learn hip-hop, street jazz and popular dance moves, building rhythm and confidence for a grand finale performance.","url":"https://www.campasia.asia/holiday-camps/be-creative/lets-dance.html","active":false,"seasons":[],"toddler":false,"actions":["Matching the tempo","Learning hip-hop steps","Choreographing a routine","Expressive movement","Stage presence training","Grooving to the music","Dance coordination"],"toddlerAnswers":["Wiggling and jumping to a happy beat","Shiny ribbons that twirl when we spin","Clapping our hands and stomping our feet together","A superstar dancer making cool moves","Moving slowly like floating bubbles","To the stage for a mini-parade","Learning how to slide and shake my hips"]},{"id":"c_mwbrupyg","name":"Let’s Dance 13-16","icon":"💃","category":"Be Creative","minAge":13,"maxAge":16,"desc":"Learn hip-hop, street jazz and popular dance moves, building rhythm and confidence for a grand finale performance.","url":"https://www.campasia.asia/holiday-camps/be-creative/lets-dance.html","active":false,"seasons":[],"toddler":false,"actions":["Matching the tempo","Learning hip-hop steps","Choreographing a routine","Expressive movement","Stage presence training","Grooving to the music","Dance coordination"],"toddlerAnswers":["Wiggling and jumping to a happy beat","Shiny ribbons that twirl when we spin","Clapping our hands and stomping our feet together","A superstar dancer making cool moves","Moving slowly like floating bubbles","To the stage for a mini-parade","Learning how to slide and shake my hips"]},{"id":"music_explorers","name":"Music Explorers 6-8","icon":"🎼","category":"Be Creative","minAge":6,"maxAge":8,"desc":"Try ukulele, keyboard, drums and guitar, sing in a choir and join a band for a Friday showcase. Beginners welcome!","url":"https://www.campasia.asia/holiday-camps/be-creative/music-explorers.html","active":true,"seasons":[],"toddler":false,"actions":["Keeping a steady beat","Learning melody lines","Discovering instruments","Rhythm coordination","Songwriting basics","Musical expression","Harmonizing with sounds"],"toddlerAnswers":[]},{"id":"c_mwbrw46l","name":"Music Explorers 9-12","icon":"🎼","category":"Be Creative","minAge":9,"maxAge":12,"desc":"Try ukulele, keyboard, drums and guitar, sing in a choir and join a band for a Friday showcase. Beginners welcome!","url":"https://www.campasia.asia/holiday-camps/be-creative/music-explorers.html","active":true,"seasons":[],"toddler":false,"actions":["Keeping a steady beat","Learning melody lines","Discovering instruments","Rhythm coordination","Songwriting basics","Musical expression","Harmonizing with sounds"],"toddlerAnswers":[]},{"id":"c_mwbsvvlj","name":"Little Clay Gardeners 9-12","icon":"🌻","category":"Be Creative","minAge":9,"maxAge":12,"desc":"Turn real plants into charming miniatures with clay, wire and paint, then design a mini plant house to show off.","url":"https://www.campasia.asia/holiday-camps/be-creative/little-clay-gardeners.html","active":true,"seasons":[],"toddler":false,"actions":["Sculpting tiny clay leaves","Bending wire plant stems","Mixing paint for natural tones","Studying real plants up close","Potting mini plants","Decorating a miniature plant house","Showing off my mini plant world"],"toddlerAnswers":[]},{"id":"english_lab","name":"English Lab 5-6","icon":"🔤","category":"Clever Stuff","minAge":5,"maxAge":6,"desc":"A two-week beginner English course with morning language lessons and afternoon STEM fun, plus a personal progress report.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/english.html","active":false,"seasons":[],"toddler":false,"actions":["Building new vocabulary","Learning phonics and sounds","Practising speaking and listening","Writing simple sentences","Reading short stories","Making STEM projects in English","Playing language games"],"toddlerAnswers":[]},{"id":"c_mwbsze54","name":"English Lab 7-8","icon":"🔤","category":"Clever Stuff","minAge":7,"maxAge":8,"desc":"A two-week beginner English course with morning language lessons and afternoon STEM fun, plus a personal progress report.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/english.html","active":false,"seasons":[],"toddler":false,"actions":["Building new vocabulary","Learning phonics and sounds","Practising speaking and listening","Writing simple sentences","Reading short stories","Making STEM projects in English","Playing language games"],"toddlerAnswers":[]},{"id":"c_mwbszopb","name":"English Lab 9-12","icon":"🔤","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"A two-week beginner English course with morning language lessons and afternoon STEM fun, plus a personal progress report.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/english.html","active":false,"seasons":[],"toddler":false,"actions":["Building new vocabulary","Learning phonics and sounds","Practising speaking and listening","Writing simple sentences","Reading short stories","Making STEM projects in English","Playing language games"],"toddlerAnswers":[]},{"id":"c_mwbt0dm9","name":"English Lab 13-14","icon":"🔤","category":"Clever Stuff","minAge":13,"maxAge":14,"desc":"A two-week beginner English course with morning language lessons and afternoon STEM fun, plus a personal progress report.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/english.html","active":false,"seasons":[],"toddler":false,"actions":["Building new vocabulary","Learning phonics and sounds","Practising speaking and listening","Writing simple sentences","Reading short stories","Making STEM projects in English","Playing language games"],"toddlerAnswers":[]},{"id":"junior_scientist","name":"Junior Scientist 6-8","icon":"🧪","category":"Clever Stuff","minAge":6,"maxAge":8,"desc":"Messy, hands-on experiments every day, from rocket balloons to extracting DNA, to uncover the secrets of the natural world.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/junior-scientist.html","active":true,"seasons":[],"toddler":false,"actions":["Dissecting nature finds","Observing ecosystems","Lab report writing","Data collection","Microscope studies","Environmental research","Chemical property tests"],"toddlerAnswers":[]},{"id":"c_mwbt50bq","name":"Junior Scientist 9-12","icon":"🧪","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Messy, hands-on experiments every day, from rocket balloons to extracting DNA, to uncover the secrets of the natural world.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/junior-scientist.html","active":false,"seasons":[],"toddler":false,"actions":["Dissecting nature finds","Observing ecosystems","Lab report writing","Data collection","Microscope studies","Environmental research","Chemical property tests"],"toddlerAnswers":[]},{"id":"math_mania","name":"Math Mania 6-8","icon":"🔢","category":"Clever Stuff","minAge":6,"maxAge":8,"desc":"Math games and number puzzles with a new theme each day, from fractions to money, to build skills and confidence.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/math-mania.html","active":false,"seasons":[],"toddler":false,"actions":["Cracking number codes","Geometric puzzling","Algebraic challenges","Logic riddles","Speed math drills","Pattern recognition","Mathematical strategy"],"toddlerAnswers":[]},{"id":"c_mwbt61t3","name":"Math Mania 9-12","icon":"🔢","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Math games and number puzzles with a new theme each day, from fractions to money, to build skills and confidence.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/math-mania.html","active":false,"seasons":[],"toddler":false,"actions":["Cracking number codes","Geometric puzzling","Algebraic challenges","Logic riddles","Speed math drills","Pattern recognition","Mathematical strategy"],"toddlerAnswers":[]},{"id":"spanish_lab","name":"Spanish Lab 6-8","icon":"🇪🇸","category":"Clever Stuff","minAge":6,"maxAge":8,"desc":"Learn Spanish through songs, games and crafts while exploring the cultures of Spanish-speaking countries.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/spanish-lab.html","active":false,"seasons":[],"toddler":false,"actions":["Conversing in Spanish","Learning cultural songs","Bilingual game play","Spanish grammar fun","Language drills","Vocabulary building","Hispanic culture study"],"toddlerAnswers":[]},{"id":"space_cadets","name":"Space Cadets 9-12","icon":"🚀","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Explore life in space: build a robot arm, try 3D design and printing, and learn about space farming and making oxygen.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/space-cadets.html","active":false,"seasons":[],"toddler":false,"actions":["Tracking constellations","Rocket launch physics","Planetary study","Astronomy simulation","Space exploration history","Gravity experiments","Lunar phase mapping"],"toddlerAnswers":[]},{"id":"kidz_economy","name":"Kidz Economy (Smart Saver) 9-12","icon":"💰","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Learn why saving matters through games and challenges: set SMART goals, design piggy banks and watch savings grow.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/kidz-economy.html","active":false,"seasons":[],"toddler":false,"actions":["Setting SMART saving goals","Designing a piggy bank","Building a savings tracker","Watching savings grow","Playing money challenges","Planning what to save for","Presenting on showcase day"],"toddlerAnswers":[]},{"id":"c_mwbq5uf9","name":"Kidz Economy (Entrepreneurship) 9-12","icon":"💰","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Go from idea to pitch: build a business plan, branding and a prototype, then sell at a Marketplace Showcase.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/kidz-economy.html","active":true,"seasons":[],"toddler":false,"actions":["Creating a vision board","Writing a business plan","Designing my brand","Planning my marketing","Building a prototype","Pitching my big idea","Selling at the marketplace showcase"],"toddlerAnswers":[]},{"id":"c_mwbq29jx","name":"Kidz Economy (Kindness Economy) 6-8","icon":"💰","category":"Clever Stuff","minAge":6,"maxAge":8,"desc":"A playful intro to money and kindness: saving, sharing and smart spending, ending in a Kindness Economy marketplace.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/kidz-economy.html","active":true,"seasons":[],"toddler":false,"actions":["Learning where money comes from","Role-playing saving and spending","Practising sharing and kindness","Choosing what to buy wisely","Making smart spending choices","Building a kindness marketplace","Showing off our marketplace"],"toddlerAnswers":[]},{"id":"junior_medic","name":"Junior Medic 9-12","icon":"🩺","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Learn first aid and how the body works through simulations, medical models and emergency role-play led by healthcare professionals.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/junior-medic.html","active":false,"seasons":[],"toddler":false,"actions":["Applying first aid","Understanding vitals","Medical logic puzzles","Body system studies","Emergency response","Healthcare simulation","Anatomy exploration"],"toddlerAnswers":[]},{"id":"c_mwbt9b8e","name":"Conversational English 9-12","icon":"🗣️","category":"Clever Stuff","minAge":9,"maxAge":12,"desc":"Build speaking confidence through games, role-play and an English escape room. Best for kids with some English; not for complete beginners.","url":"https://www.campasia.asia/holiday-camps/clever-stuff/conversational-english.html","active":true,"seasons":[],"toddler":false,"actions":["Playing speaking and conversation games","Solving mystery clues","Cracking the English escape room","Role-playing in a café or marketplace","Hunting for clues around campus","Preparing a team talk show","Telling stories and sharing ideas"],"toddlerAnswers":[]},{"id":"creative_coding","name":"Creative Coding 6-8","icon":"💻","category":"Tech Savvy","minAge":6,"maxAge":8,"desc":"Learn to code by creating your own stories and video games with kid-friendly tools like Scratch. No experience needed.","url":"https://www.campasia.asia/holiday-camps/tech-savvy/creative-coding.html","active":false,"seasons":[],"toddler":false,"actions":["Writing lines of script","Debugging a game level","Creating digital assets","Logic loop building","App design basics","Animation coding","Interactive story building"],"toddlerAnswers":[]},{"id":"c_mwbtg116","name":"Creative Coding 9-12","icon":"💻","category":"Tech Savvy","minAge":9,"maxAge":12,"desc":"Learn to code by creating your own stories and video games with kid-friendly tools like Scratch. No experience needed.","url":"https://www.campasia.asia/holiday-camps/tech-savvy/creative-coding.html","active":false,"seasons":[],"toddler":false,"actions":["Writing lines of script","Debugging a game level","Creating digital assets","Logic loop building","App design basics","Animation coding","Interactive story building"],"toddlerAnswers":[]},{"id":"electronic_makerspace","name":"Electronic Makerspace 6-8","icon":"🔌","category":"Tech Savvy","minAge":6,"maxAge":8,"desc":"Be a maker! Use circuits, LEDs and buzzers to bring cardboard, play-dough and games to life.","url":"https://www.campasia.asia/holiday-camps/tech-savvy/electronic-makerspace.html","active":false,"seasons":[],"toddler":false,"actions":["Soldering circuit boards","Wiring up LEDs","Building a DIY gadget","Exploring hardware","Electronic prototyping","Making sound circuits","Input/Output logic"],"toddlerAnswers":[]},{"id":"robotics_makerspace","name":"Robotics Makerspace 6-8","icon":"🤖","category":"Tech Savvy","minAge":6,"maxAge":8,"desc":"Build and program robots with LEGO Spike and VEX kits, tackling daily challenges and mini-competitions.","url":"https://www.campasia.asia/holiday-camps/tech-savvy/robotics-makerspace.html","active":true,"seasons":[],"toddler":false,"actions":["Gearing up motors","Coding a sensor path","Building robotic arms","Mechanical assembly","Bot battle design","Automated system building","Robotic logic"],"toddlerAnswers":[]},{"id":"c_mwbtheih","name":"Robotics Makerspace 9-12","icon":"🤖","category":"Tech Savvy","minAge":9,"maxAge":12,"desc":"Build and program robots with LEGO Spike and VEX kits, tackling daily challenges and mini-competitions.","url":"https://www.campasia.asia/holiday-camps/tech-savvy/robotics-makerspace.html","active":true,"seasons":[],"toddler":false,"actions":["Gearing up motors","Coding a sensor path","Building robotic arms","Mechanical assembly","Bot battle design","Automated system building","Robotic logic"],"toddlerAnswers":[]},{"id":"fabric_hackerspace","name":"Fabric Hackerspace 9-12","icon":"🧵","category":"Tech Savvy","minAge":9,"maxAge":12,"desc":"Code embroidery patterns with TurtleStitch, use professional sewing and embroidery machines, and design sustainable prototypes.","url":"https://www.campasia.asia/holiday-camps/tech-savvy/fabric-hackerspace.html","active":true,"seasons":[],"toddler":false,"actions":["Stitching unique patterns","Designing wearable art","Textile manipulation","Fashion prototyping","Embroidery and patches","Garment construction","Fabric tech integration"],"toddlerAnswers":[]}]}</script>
+<script id="main-script">
+        // Source pieces used by the editor to regenerate this page when saving
+        const PAGE_HEAD = [...document.head.querySelectorAll('meta[charset],meta[name="viewport"],title,link[rel="stylesheet"],link[rel="preconnect"],script[src*="tailwindcss"],script[src*="jspdf"]')].map(n => n.outerHTML).join("\n");
+        const PAGE_CSS = document.querySelector("style[data-keep]").textContent;
+        const PAGE_BODY = [...document.body.children].filter(n => n.tagName === "DIV").map(n => n.outerHTML).join("\n");
+        const PAGE_JS = document.getElementById("main-script").textContent;
+        // CONFIG: Replace this with your actual website URL where this quiz is hosted
+        let WEBSITE_URL = "https://www.campasia.asia"; 
+
+        const campDatabase = [
+            // Multi Activity Category
+            { id: "multi_activity", name: "Multi-Activity", icon: "🎡", category: "Multi Activity", minAge: 3, maxAge: 8, desc: "A daily mix of arts and crafts, drama, active games and hands-on discoveries. No experience needed, just curiosity!", url: "https://www.campasia.asia/holiday-camps/multi-activity/multi-activity-1.html" },
+            { id: "multi_adventure", name: "Multi-Adventure", icon: "🏕️", category: "Multi Activity", minAge: 9, maxAge: 11, desc: "Multi-Activity for older kids: outdoor survival skills, map reading, team challenges and a weekly excursion that build confidence and independence.", url: "https://www.campasia.asia/holiday-camps/multi-adventure.html" },
+            { id: "multi_stem", name: "Multi-STEM", icon: "🧬", category: "Multi Activity", minAge: 9, maxAge: 12, desc: "A new STEM discipline each day, from coding and LEGO robotics to game design and engineering projects.", url: "https://www.campasia.asia/holiday-camps/multi-stem.html" },
+            { id: "multi_xperience", name: "Multi-Xperience", icon: "🎢", category: "Multi Activity", minAge: 5, maxAge: 12, desc: "Themed days of outdoor exploration, nature crafts, cooking and STEM fun at City Sprouts in Pasir Ris. A 3- or 5-day camp held off campus.", url: "https://www.campasia.asia/holiday-camps/multi-xperience.html" },
+            
+            // Get Physical Category
+            { id: "parkour", name: "Parkour", icon: "🏃", category: "Get Physical", minAge: 7, maxAge: 14, desc: "A week of jumping, climbing, vaulting and balancing that builds strength, focus and confidence with skilled instructors.", url: "https://www.campasia.asia/holiday-camps/parkour.html" },
+            { id: "super_basketball", name: "Super Basketball", icon: "🏀", category: "Get Physical", minAge: 7, maxAge: 16, desc: "An intensive week of drills, workshops and games to build skills, teamwork and confidence on the court.", url: "https://www.campasia.asia/holiday-camps/super-basketball.html" },
+            { id: "super_gymnastics", name: "Super Gymnastics", icon: "🤸", category: "Get Physical", minAge: 5, maxAge: 12, desc: "Floor, bars, beam and trampoline fun that builds strength, flexibility and confidence at every level.", url: "https://www.campasia.asia/holiday-camps/super-gymnastics.html" },
+            { id: "super_soccer", name: "Super Soccer", icon: "⚽", category: "Get Physical", minAge: 5, maxAge: 14, desc: "Skills, drills and match play with daily prizes and a Friday mini World Cup, for beginners to elite players.", url: "https://www.campasia.asia/holiday-camps/super-soccer.html" },
+            { id: "super_swim", name: "Super Swim", icon: "🏊", category: "Get Physical", minAge: 9, maxAge: 16, desc: "High-performance training for competitive swimmers: race-focused pool sessions, dryland strength and video analysis. Swimmers need 25m of freestyle, backstroke and breaststroke to join.", url: "https://www.campasia.asia/holiday-camps/super-swim.html" },
+
+            // Be Creative Category
+            { id: "drama_academy", name: "Drama Academy", icon: "🎭", category: "Be Creative", minAge: 4, maxAge: 12, desc: "Games, improvisation, storytelling and acting that build confidence and creativity, ending with a stage showcase on Friday.", url: "https://www.campasia.asia/holiday-camps/drama-academy.html" },
+            { id: "passion_art", name: "Passion for Art", icon: "🎨", category: "Be Creative", minAge: 6, maxAge: 11, desc: "Painting, drawing, ceramics and recycled art, plus art history and famous styles, ending in a gallery exhibition.", url: "https://www.campasia.asia/holiday-camps/passion-for-art.html" },
+            { id: "super_chef", name: "Super Chef", icon: "👨‍🍳", category: "Be Creative", minAge: 6, maxAge: 16, desc: "Hands-on cooking with creative recipes, teamwork and confidence-building kitchen skills, with a cooking showcase to finish.", url: "https://www.campasia.asia/holiday-camps/super-chef.html" },
+            { id: "lets_dance", name: "Let’s Dance", icon: "💃", category: "Be Creative", minAge: 4, maxAge: 16, desc: "Learn hip-hop, street jazz and popular dance moves, building rhythm and confidence for a grand finale performance.", url: "https://www.campasia.asia/holiday-camps/lets-dance.html" },
+            { id: "music_explorers", name: "Music Explorers", icon: "🎼", category: "Be Creative", minAge: 6, maxAge: 12, desc: "Try ukulele, keyboard, drums and guitar, sing in a choir and join a band for a Friday showcase. Beginners welcome!", url: "https://www.campasia.asia/holiday-camps/music-explorers.html" },
+
+            // Clever Stuff Category (Academic)
+            { id: "english_lab", name: "English Lab", icon: "🔤", category: "Clever Stuff", minAge: 5, maxAge: 14, desc: "A two-week beginner English course with morning language lessons and afternoon STEM fun, plus a personal progress report.", url: "https://www.campasia.asia/holiday-camps/english-lab.html" },
+            { id: "junior_scientist", name: "Junior Scientist", icon: "🧪", category: "Clever Stuff", minAge: 6, maxAge: 11, desc: "Messy, hands-on experiments every day, from rocket balloons to extracting DNA, to uncover the secrets of the natural world.", url: "https://www.campasia.asia/holiday-camps/junior-scientist.html" },
+            { id: "math_mania", name: "Math Mania", icon: "🔢", category: "Clever Stuff", minAge: 6, maxAge: 11, desc: "Math games and number puzzles with a new theme each day, from fractions to money, to build skills and confidence.", url: "https://www.campasia.asia/holiday-camps/math-mania.html" },
+            { id: "spanish_lab", name: "Spanish Lab", icon: "🇪🇸", category: "Clever Stuff", minAge: 6, maxAge: 8, desc: "Learn Spanish through songs, games and crafts while exploring the cultures of Spanish-speaking countries.", url: "https://www.campasia.asia/holiday-camps/spanish-lab.html" },
+            { id: "space_cadets", name: "Space Cadets", icon: "🚀", category: "Clever Stuff", minAge: 9, maxAge: 12, desc: "Explore life in space: build a robot arm, try 3D design and printing, and learn about space farming and making oxygen.", url: "https://www.campasia.asia/holiday-camps/space-cadets.html" },
+            { id: "kidz_economy", name: "Kidz Economy", icon: "💰", category: "Clever Stuff", minAge: 6, maxAge: 11, desc: "Hands-on money skills through games and challenges, from saving and kindness to running a business.", url: "https://www.campasia.asia/holiday-camps/kidz-economy.html" },
+            { id: "junior_medic", name: "Junior Medic", icon: "🩺", category: "Clever Stuff", minAge: 9, maxAge: 12, desc: "Learn first aid and how the body works through simulations, medical models and emergency role-play led by healthcare professionals.", url: "https://www.campasia.asia/holiday-camps/junior-medic.html" },
+            
+            // Tech Savvy Category
+            { id: "creative_coding", name: "Creative Coding", icon: "💻", category: "Tech Savvy", minAge: 6, maxAge: 11, desc: "Learn to code by creating your own stories and video games with kid-friendly tools like Scratch. No experience needed.", url: "https://www.campasia.asia/holiday-camps/creative-coding.html" },
+            { id: "electronic_makerspace", name: "Electronic Makerspace", icon: "🔌", category: "Tech Savvy", minAge: 6, maxAge: 9, desc: "Be a maker! Use circuits, LEDs and buzzers to bring cardboard, play-dough and games to life.", url: "https://www.campasia.asia/holiday-camps/electronic-makerspace.html" },
+            { id: "robotics_makerspace", name: "Robotics Makerspace", icon: "🤖", category: "Tech Savvy", minAge: 6, maxAge: 12, desc: "Build and program robots with LEGO Spike and VEX kits, tackling daily challenges and mini-competitions.", url: "https://www.campasia.asia/holiday-camps/robotics-makerspace.html" },
+            { id: "fabric_hackerspace", name: "Fabric Hackerspace", icon: "🧵", category: "Tech Savvy", minAge: 9, maxAge: 11, desc: "Code embroidery patterns with TurtleStitch, use professional sewing and embroidery machines, and design sustainable prototypes.", url: "https://www.campasia.asia/holiday-camps/fabric-hackerspace.html" }
+        ];
+
+        const steerQuestions = [
+            { q: "What’s your dream environment?", a: { "Get Physical": "A wide open sports field", "Tech Savvy": "A high-tech coding or robotics lab", "Be Creative": "A messy art studio or bright stage", "Clever Stuff": "A place for experiments and reading" }},
+            { q: "Pick a legendary tool to master:", a: { "Get Physical": "A precision sports ball", "Tech Savvy": "A laptop or soldering iron", "Be Creative": "A paintbrush or microphone", "Multi Activity": "A backpack full of different tools" }},
+            { q: "What defines a perfect success?", a: { "Get Physical": "Breaking a physical record", "Tech Savvy": "Building an app that works", "Be Creative": "Creating something beautiful", "Clever Stuff": "Solving a complex global puzzle" }}
+        ];
+
+        const actionBank = {
+            "multi_activity": ["Trying a bit of everything", "Rotating through different zones", "Swapping sports for arts", "Exploring variety", "A mix of everything", "Testing different skills", "Changing activities daily"],
+            "multi_adventure": ["Building survival shelters", "Trekking through the wild", "Learning outdoor safety", "Mastering teamwork challenges", "Navigating the great outdoors", "Camping skills 101", "Brave exploration"],
+            "multi_stem": ["Building bridge models", "Testing chemistry reactions", "Engineering tall towers", "Physics experiments", "Scientific method testing", "Hands-on maker projects", "Solving tech puzzles"],
+            "multi_xperience": ["Going on field trips", "Special guest workshops", "City exploration", "Unique daily themes", "Adventure outings", "New hobby testing", "Behind-the-scenes access"],
+            "parkour": ["Jumping over obstacles", "Learning urban agility", "Practicing safe landings", "Mastering wall runs", "Fluid movement mastery", "Gravity-defying leaps", "Precision balance training"],
+            "super_basketball": ["Dribbling past defenders", "Practicing 3-pointer shots", "Running court drills", "Mastering the slam dunk", "Team offense strategies", "Layup perfection", "Hoops mastery"],
+            "super_gymnastics": ["Tumbling on the mats", "Balancing on the beam", "Learning floor routines", "Vaulting through the air", "Strength and flexibility", "Gymnastic artistry", "Perfecting the flip"],
+            "super_soccer": ["Scoring a winning goal", "Dribbling through cones", "Defensive wall building", "Penalty kick practice", "Field awareness drills", "Pinpoint passing", "Agility on the ball"],
+            "super_swim": ["Perfecting the breaststroke", "Diving into deep water", "Increasing lap speed", "Water safety drills", "Stroke refinement", "Aquatic confidence", "Efficient breathing techniques"],
+            "drama_academy": ["Stepping into the spotlight", "Practicing stage voice", "Improvising a scene", "Character development", "Monologue mastery", "Theater performance", "Emoting for the audience"],
+            "passion_art": ["Mixing oil paints", "Sculpting with clay", "Canvas design", "Mixed media collage", "Artistic sketching", "Color theory practice", "Creative exhibition"],
+            "super_chef": ["Whisking and baking", "Plating gourmet meals", "Knife skill training", "Flavor profile mixing", "Kitchen safety", "International recipes", "Pastry arts"],
+            "lets_dance": ["Matching the tempo", "Learning hip-hop steps", "Choreographing a routine", "Expressive movement", "Stage presence training", "Grooving to the music", "Dance coordination"],
+            "music_explorers": ["Keeping a steady beat", "Learning melody lines", "Discovering instruments", "Rhythm coordination", "Songwriting basics", "Musical expression", "Harmonizing with sounds"],
+            "english_lab": ["Creative storytelling", "Expanding vocabulary", "Public speaking skills", "Literary analysis", "Persuasive writing", "Phonetic mastery", "Language immersion"],
+            "junior_scientist": ["Dissecting nature finds", "Observing ecosystems", "Lab report writing", "Data collection", "Microscope studies", "Environmental research", "Chemical property tests"],
+            "math_mania": ["Cracking number codes", "Geometric puzzling", "Algebraic challenges", "Logic riddles", "Speed math drills", "Pattern recognition", "Mathematical strategy"],
+            "spanish_lab": ["Conversing in Spanish", "Learning cultural songs", "Bilingual game play", "Spanish grammar fun", "Language drills", "Vocabulary building", "Hispanic culture study"],
+            "space_cadets": ["Tracking constellations", "Rocket launch physics", "Planetary study", "Astronomy simulation", "Space exploration history", "Gravity experiments", "Lunar phase mapping"],
+            "kidz_economy": ["Trading and marketing", "Managing a budget", "Business pitch prep", "Entrepreneurial thinking", "Understanding currency", "Consumer logic", "Start-up basics"],
+            "junior_medic": ["Applying first aid", "Understanding vitals", "Medical logic puzzles", "Body system studies", "Emergency response", "Healthcare simulation", "Anatomy exploration"],
+            "creative_coding": ["Writing lines of script", "Debugging a game level", "Creating digital assets", "Logic loop building", "App design basics", "Animation coding", "Interactive story building"],
+            "electronic_makerspace": ["Soldering circuit boards", "Wiring up LEDs", "Building a DIY gadget", "Exploring hardware", "Electronic prototyping", "Making sound circuits", "Input/Output logic"],
+            "robotics_makerspace": ["Gearing up motors", "Coding a sensor path", "Building robotic arms", "Mechanical assembly", "Bot battle design", "Automated system building", "Robotic logic"],
+            "fabric_hackerspace": ["Stitching unique patterns", "Designing wearable art", "Textile manipulation", "Fashion prototyping", "Embroidery and patches", "Garment construction", "Fabric tech integration"]
+        };
+
+        const toddlerScenarios = [
+            { q: "It’s time for morning fun! What do we do first?", a: { multi_activity: "Running through a colorful obstacle course", lets_dance: "Wiggling and jumping to a happy beat", drama_academy: "Putting on a magical crown and cape" }},
+            { q: "We found a big box of surprises! What’s inside?", a: { multi_activity: "Balls, hoops, and sticky craft paper", lets_dance: "Shiny ribbons that twirl when we spin", drama_academy: "A puppet that wants to tell us a story" }},
+            { q: "Our friends are coming over! How do we play?", a: { multi_activity: "Playing a big game of follow-the-leader", lets_dance: "Clapping our hands and stomping our feet together", drama_academy: "Pretending we are all animals in the jungle" }},
+            { q: "Look at the big mirror! Who do you see?", a: { multi_activity: "A fast explorer ready for a race", lets_dance: "A superstar dancer making cool moves", drama_academy: "A silly character making funny faces" }},
+            { q: "We have some quiet time. What’s the best activity?", a: { multi_activity: "Painting a messy, beautiful masterpiece", lets_dance: "Moving slowly like floating bubbles", drama_academy: "Using our voices to make different sounds" }},
+            { q: "The sun is out! Where are we going?", a: { multi_activity: "To the playground for some big jumps", lets_dance: "To the stage for a mini-parade", drama_academy: "To the story-tree to act out a book" }},
+            { q: "It’s the end of the day! What was the best part?", a: { multi_activity: "Trying three different things in one day", lets_dance: "Learning how to slide and shake my hips", drama_academy: "Showing everyone my favorite pretend character" }}
+        ];
+
+        const generalScenarios = [
+            { q: "You arrive at camp and have 30 minutes of free time. Where are you heading?", label: "Morning Choice" },
+            { q: "A surprise guest arrives to show you a legendary tool. Which one grabs your attention?", label: "Special Guest" },
+            { q: "The mid-day challenge begins! How do you help your team win?", label: "The Challenge" },
+            { q: "It’s time to choose a special workshop for the afternoon. What’s the plan?", label: "Afternoon Workshop" },
+            { q: "You discover a hidden room in the camp. What kind of gear is inside?", label: "The Discovery" },
+            { q: "The Grand Finale is tomorrow! What are you spending today practicing?", label: "Big Finale Prep" },
+            { q: "Camp is almost over! What’s the one thing you’ll tell everyone at home about?", label: "The Memory" }
+        ];
+
+        let state = { currentIdx: 0, ageMin: 0, ageMax: 0, catScores: {}, campScores: {}, history: [], lastResult: null };
+
+        function resetState() {
+            state = { 
+                currentIdx: 0, 
+                ageMin: 0, 
+                ageMax: 0, 
+                catScores: { "Get Physical": 0, "Be Creative": 0, "Clever Stuff": 0, "Multi Activity": 0, "Tech Savvy": 0 }, 
+                campScores: {}, 
+                history: [],
+                lastResult: null
+            };
+        }
+
+        function showAgeScreen() {
+            track('start');
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('age-screen').classList.remove('hidden');
+        }
+
+        function resetToStart() {
+            resetState();
+            document.getElementById('age-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        function setAge(min, max) {
+            track('age', { age: min + '-' + max });
+            state.ageMin = min; 
+            state.ageMax = max;
+            camps.forEach(c => state.campScores[c.id] = 0);
+            document.getElementById('age-screen').classList.add('hidden');
+            startQuiz();
+        }
+
+        function backToBands() {
+            document.getElementById('age-screen').classList.remove('hidden');
+            resetState();
+        }
+
+        // With one camp or none to choose from, skip the questions and go straight to the result
+        function startQuiz() {
+            document.getElementById('header-nav').classList.remove('hidden');
+            document.getElementById('question-screen').classList.remove('hidden');
+            if (!getEligibleCamps().length) {
+                const box = document.getElementById('options-container');
+                document.getElementById('question-number').innerText = '--';
+                document.getElementById('question-text').innerText = 'We don\u2019t have a camp for this age right now. Check back soon!';
+                box.innerHTML = '';
+                const b = document.createElement('button');
+                b.className = 'btn-option';
+                b.innerText = '\u2190 Pick another age';
+                b.onclick = () => { document.getElementById('question-screen').classList.add('hidden'); document.getElementById('header-nav').classList.add('hidden'); backToBands(); };
+                box.appendChild(b);
+                return;
+            }
+            showQuestion();
+        }
+
+        // Answer options: the leading category first, topped up from the next categories so a preference is never lost
+        // Fair shuffle used for question order and answer order
+        function shuffleArr(a) { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+        function pickOptionCamps(eligible) {
+            const sc = state.catScores; state.tie = state.tie || {};
+            const tb = k => (state.tie[k] === undefined ? (state.tie[k] = Math.random()) : state.tie[k]);
+            const order = Object.keys(sc).sort((a, b) => (sc[b] - sc[a]) || (tb(a) - tb(b)));
+            const out = [];
+            order.forEach(cat => eligible.filter(c => c.category === cat).sort(() => 0.5 - Math.random()).forEach(c => { if (out.length < 4) out.push(c); }));
+            return shuffleArr(out);
+        }
+
+        function getEligibleCamps() {
+            const hiddenOk = DATA.settings.showHiddenResult !== false;
+            return camps.filter(c => (hiddenOk || isLive(c)) && c.minAge <= state.ageMax && c.maxAge >= state.ageMin && (state.ageMax <= 4 ? c.toddler : true));
+        }
+
+        function showQuestion() {
+            if (state.currentIdx >= 10) { showResult(); return; }
+            // every session gets its own question order
+            if (!state.order) { state.order = shuffleArr([0, 1, 2, 3, 4, 5, 6]); state.steerOrder = shuffleArr([0, 1, 2]); }
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            document.getElementById('question-number').innerText = (state.currentIdx + 1).toString().padStart(2, '0');
+            document.getElementById('progress-bar').style.width = `${((state.currentIdx + 1) / 10) * 100}%`;
+            document.getElementById('progress-text').innerText = `${state.currentIdx + 1} of 10`;
+
+            if (state.currentIdx < 3) {
+                const q = steerQuestions[state.steerOrder[state.currentIdx]];
+                document.getElementById('question-text').innerText = q.q;
+                
+                shuffleArr(Object.keys(q.a)).forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = "btn-option fade-in";
+                    btn.innerText = q.a[cat];
+                    btn.onclick = () => {
+                        state.history.push({ catScores: {...state.catScores}, campScores: {...state.campScores} });
+                        state.catScores[cat]++;
+                        state.currentIdx++;
+                        showQuestion();
+                    };
+                    container.appendChild(btn);
+                });
+            } else {
+                const stepIdx = state.currentIdx - 3, qi = state.order[stepIdx];
+                
+                if (state.ageMax <= 4) {
+                    const scenario = toddlerScenarios[qi];
+                    document.getElementById('question-text').innerText = scenario.q;
+                    shuffleArr(getEligibleCamps().filter(c => c.toddlerAnswers && c.toddlerAnswers[qi])).forEach(tc => { const campId = tc.id;
+                        const btn = document.createElement('button');
+                        btn.className = "btn-option fade-in";
+                        btn.innerText = tc.toddlerAnswers[qi];
+                        btn.onclick = () => {
+                            state.history.push({ catScores: {...state.catScores}, campScores: {...state.campScores} });
+                            state.campScores[campId] = (state.campScores[campId] || 0) + 1;
+                            state.currentIdx++;
+                            showQuestion();
+                        };
+                        container.appendChild(btn);
+                    });
+                } else {
+                    const scenario = generalScenarios[qi];
+                    document.getElementById('question-text').innerText = scenario.q;
+                    
+                    const eligible = getEligibleCamps();
+                    const shuffled = pickOptionCamps(eligible);
+                    shuffled.forEach(camp => {
+                        const btn = document.createElement('button');
+                        btn.className = "btn-option fade-in";
+                        const actionText = (camp.actions && (camp.actions[qi] || camp.actions[0])) || "Explore more";
+                        btn.innerText = `${actionText}!`;
+                        btn.onclick = () => {
+                            state.history.push({ catScores: {...state.catScores}, campScores: {...state.campScores} });
+                            state.campScores[camp.id] = (state.campScores[camp.id] || 0) + (1);
+                            state.currentIdx++;
+                            showQuestion();
+                        };
+                        container.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function showResult() {
+            document.getElementById('question-screen').classList.add('hidden');
+            document.getElementById('header-nav').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            const eligible = getEligibleCamps().map(c => ({
+                ...c,
+                finalScore: (state.campScores[c.id] || 0) + 0.3 * (state.catScores[c.category] || 0) + (Math.random() * 0.1)
+            })).sort((a, b) => b.finalScore - a.finalScore);
+            
+            const winner = eligible[0] || camps[0];
+            state.lastResult = winner;
+            const alts = eligible.slice(1).filter(c => DATA.settings.showHiddenBackups === true || isLive(c)).slice(0, 3);
+            state.lastAlts = alts;
+            track('result', { age: state.ageMin + '-' + state.ageMax, camp: winner.name, cat: catLabel(winner.category), hid: isLive(winner) ? 0 : 1, alts: alts.map(c => c.name) });
+
+            document.getElementById('result-camp').innerText = winner.name;
+            document.getElementById('result-description').innerText = winner.desc;
+            const rNote = document.getElementById('result-note');
+            rNote.innerText = isLive(winner) ? '' : 'Not available this season';
+            rNote.classList.toggle('hidden', isLive(winner));
+            document.getElementById('result-avatar').innerText = winner.icon;
+            document.getElementById('result-link').href = trackUrl(winner.url, 'quiz-result');
+            document.getElementById('result-link').onclick = () => track('click_result', { age: state.ageMin + '-' + state.ageMax, camp: winner.name, cat: catLabel(winner.category) });
+
+            const catStyles = {
+                "Multi Activity": { bg: "#bae6fd", text: "black" },
+                "Get Physical": { bg: "black", text: "white" },
+                "Be Creative": { bg: "#fecaca", text: "black" },
+                "Clever Stuff": { bg: "#bbf7d0", text: "black" },
+                "Tech Savvy": { bg: "#6b7280", text: "white" }
+            };
+
+            const catTag = document.getElementById('result-cat-tag');
+            const style = catStyles[winner.category] || { bg: "#eee", text: "black" };
+            
+            catTag.innerText = catLabel(winner.category);
+            catTag.style.backgroundColor = style.bg;
+            catTag.style.color = style.text;
+            catTag.style.borderColor = "black";
+
+            const altsList = document.getElementById('alternatives-list');
+            altsList.innerHTML = '';
+            document.getElementById('alts-title').style.display = alts.length ? '' : 'none';
+            alts.forEach(c => {
+                const alt = document.createElement('a');
+                alt.href = trackUrl(c.url, 'quiz-backup');
+                alt.onclick = () => track('click_backup', { age: state.ageMin + '-' + state.ageMax, camp: c.name, cat: catLabel(c.category) });
+                alt.target = "_blank";
+                alt.className = "bg-white border-2 border-black rounded-xl p-2 flex flex-col items-center hover:bg-gray-50 transition-colors";
+                alt.innerHTML = `<div class="text-xl">${c.icon}</div><div class="bungee text-[8px] text-black text-center line-clamp-1">${c.name}</div>${isLive(c) ? '' : '<div class="text-[7px] font-bold text-red-600 text-center leading-tight uppercase">Not available this season</div>'}`;
+                altsList.appendChild(alt);
+            });
+        }
+
+        function shareResult() { return shareResultPdf(); }
+
+        // Adds tracking tags so your website analytics can show visits that came from the quiz (empty tag in the editor = off)
+        function trackUrl(u, medium) {
+            const src = String(DATA.settings.utmSource === undefined ? "camp-quiz" : DATA.settings.utmSource).trim();
+            if (!src) return u;
+            try {
+                const x = new URL(u), camp = String(DATA.settings.frontHeader || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                x.searchParams.set("utm_source", src); x.searchParams.set("utm_medium", medium); x.searchParams.set("utm_campaign", camp || "general");
+                return x.toString();
+            } catch (e) { return u; }
+        }
+
+        // ===== SHARE RESULT AS A PDF (with clickable links) =====
+        const CAT_PDF = { "Multi Activity": ["#bae6fd", "#000000"], "Get Physical": ["#000000", "#ffffff"], "Be Creative": ["#fecaca", "#000000"], "Clever Stuff": ["#bbf7d0", "#000000"], "Tech Savvy": ["#6b7280", "#ffffff"] };
+        const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+        const pdfText = s => String(s == null ? "" : s).replace(/[^\x20-\x7E\u00A0-\u00FF\u2018\u2019\u201C\u201D\u2013\u2014\u2026]/g, "").replace(/\s+/g, " ").trim();
+        const quizLink = () => {
+            // On your own website (outside Claude) the PDF links back to the page the quiz is actually on
+            if (!window.claude && /^https?:$/.test(location.protocol)) return location.href.split(/[#?]/)[0];
+            const u = String(WEBSITE_URL || "").trim(); return /^https?:\/\//i.test(u) ? u : "https://" + u;
+        };
+
+        function emojiPng(e, size) {
+            size = size || 192;
+            const c = document.createElement("canvas"); c.width = c.height = size;
+            const g = c.getContext("2d");
+            g.font = Math.round(size * 0.74) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+            g.textAlign = "center"; g.textBaseline = "middle";
+            g.fillText(e, size / 2, size / 2 + size * 0.04);
+            return c.toDataURL("image/png");
+        }
+
+        function buildResultPdf() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: "mm", format: "a4" });
+            const W = 210, H = 297, RED = [255, 77, 77], DARK = [26, 26, 26], YELLOW = [250, 204, 21], WHITE = [255, 255, 255];
+            const win = state.lastResult, alts = (state.lastAlts || []).slice(0, 3);
+            const link = quizLink(), linkUrl = trackUrl(link, 'quiz-pdf-share');
+            doc.setProperties({ title: "My Camp Asia match: " + pdfText(win.name), subject: "Camp Asia camp quiz result", author: "Camp Asia" });
+            doc.setFillColor(...RED); doc.rect(0, 0, W, H, "F");
+
+            // logo and title
+            doc.setLineWidth(1); doc.setDrawColor(...DARK); doc.setFillColor(...WHITE);
+            doc.roundedRect(70, 14, 70, 14, 7, 7, "FD");
+            doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.setTextColor(226, 31, 38);
+            doc.text("CAMP ASIA", W / 2, 24, { align: "center" });
+            doc.setTextColor(...WHITE); doc.setFontSize(26);
+            doc.text("MY CAMP MATCH", W / 2, 46, { align: "center" });
+            const fh = pdfText(DATA.settings.frontHeader || "");
+            if (fh) { doc.setFontSize(10); doc.text(fh.toUpperCase(), W / 2, 51.5, { align: "center" }); doc.setFontSize(26); }
+
+            // measure the result card
+            doc.setFont("helvetica", "bold"); doc.setFontSize(22);
+            const nameLines = doc.splitTextToSize(pdfText(win.name).toUpperCase(), 150);
+            doc.setFont("helvetica", "normal"); doc.setFontSize(13);
+            const descLines = doc.splitTextToSize(pdfText(win.desc), 150);
+            const cardTop = 54, cardH = 6 + 29 + nameLines.length * 9 + 2 + 10 + 7 + descLines.length * 6.2 + 5 + 12 + 7 + (isLive(win) ? 0 : 6);
+            doc.setLineWidth(1.2); doc.setFillColor(...WHITE); doc.setDrawColor(...DARK);
+            doc.roundedRect(15, cardTop, 180, cardH, 6, 6, "FD");
+
+            let y = cardTop + 6;
+            doc.addImage(emojiPng(win.icon), "PNG", W / 2 - 13, y, 26, 26); y += 29;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(...DARK);
+            nameLines.forEach((ln, i) => doc.text(ln, W / 2, y + 7 + i * 9, { align: "center" }));
+            y += nameLines.length * 9 + 2;
+
+            // category badge
+            const cs = CAT_PDF[win.category] || ["#eeeeee", "#000000"], catName = pdfText(catLabel(win.category)).toUpperCase();
+            doc.setFontSize(9); const bw = doc.getTextWidth(catName) + 10;
+            doc.setFillColor(...hexRgb(cs[0])); doc.setLineWidth(0.5); doc.setDrawColor(...DARK);
+            doc.roundedRect(W / 2 - bw / 2, y, bw, 7, 3.5, 3.5, "FD");
+            doc.setTextColor(...hexRgb(cs[1])); doc.text(catName, W / 2, y + 4.8, { align: "center" });
+            y += 10;
+
+            doc.setFontSize(10); doc.setTextColor(90, 90, 90);
+            doc.text("Ages " + pdfText(ageLabel(win)), W / 2, y + 3.5, { align: "center" }); y += 7;
+
+            doc.setFont("helvetica", "normal"); doc.setFontSize(13); doc.setTextColor(...DARK);
+            descLines.forEach((ln, i) => doc.text(ln, W / 2, y + 5 + i * 6.2, { align: "center" }));
+            y += descLines.length * 6.2 + 5;
+            if (!isLive(win)) { doc.setFont("helvetica", "italic"); doc.setFontSize(9); doc.setTextColor(200, 30, 30); doc.text("Not available this season", W / 2, y + 1, { align: "center" }); y += 6; }
+
+            // button to the camp page
+            doc.setFillColor(...YELLOW); doc.setLineWidth(1); doc.setDrawColor(...DARK);
+            doc.roundedRect(W / 2 - 45, y, 90, 12, 4, 4, "FD");
+            doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...DARK);
+            doc.text("VIEW THIS CAMP", W / 2, y + 7.8, { align: "center" });
+            doc.link(W / 2 - 45, y, 90, 12, { url: trackUrl(win.url, 'quiz-pdf') });
+
+            // backup squad
+            let by = cardTop + cardH + 11;
+            if (alts.length) {
+                doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...WHITE);
+                doc.text("YOUR BACKUP SQUAD", W / 2, by, { align: "center" });
+                const total = alts.length * 56 + (alts.length - 1) * 6; let bx = (W - total) / 2; by += 4;
+                alts.forEach(a => {
+                    doc.setFillColor(...WHITE); doc.setLineWidth(0.8); doc.setDrawColor(...DARK);
+                    doc.roundedRect(bx, by, 56, 30, 4, 4, "FD");
+                    doc.addImage(emojiPng(a.icon, 128), "PNG", bx + 28 - 6, by + 3, 12, 12);
+                    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(...DARK);
+                    doc.splitTextToSize(pdfText(a.name).toUpperCase(), 50).slice(0, 2).forEach((ln, i) => doc.text(ln, bx + 28, by + 20 + i * 4, { align: "center" }));
+                    if (!isLive(a)) { doc.setFont("helvetica", "italic"); doc.setFontSize(6.5); doc.setTextColor(200, 30, 30); doc.text("Not available this season", bx + 28, by + 27.5, { align: "center" }); }
+                    doc.link(bx, by, 56, 30, { url: trackUrl(a.url, 'quiz-pdf') });
+                    bx += 62;
+                });
+                by += 40;
+            }
+
+            // call to action with the clickable quiz link
+            const ch = 34;
+            doc.setFillColor(...YELLOW); doc.setLineWidth(1.2); doc.setDrawColor(...DARK);
+            doc.roundedRect(15, by, 180, ch, 6, 6, "FD");
+            doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(...DARK);
+            doc.text("Know a child who would love to find their camp match?", W / 2, by + 10, { align: "center", maxWidth: 165 });
+            doc.setFont("helvetica", "normal"); doc.setFontSize(11);
+            doc.text("Tap the link to take the quiz too:", W / 2, by + 17.5, { align: "center" });
+            let fs = 12; doc.setFont("helvetica", "bold");
+            doc.setFontSize(fs); while (doc.getTextWidth(link) > 168 && fs > 6) { fs -= 0.5; doc.setFontSize(fs); }
+            const lw = doc.getTextWidth(link), lx = (W - lw) / 2, ly = by + 26;
+            doc.setTextColor(0, 64, 200); doc.textWithLink(link, lx, ly, { url: linkUrl });
+            doc.setDrawColor(0, 64, 200); doc.setLineWidth(0.3); doc.line(lx, ly + 1, lx + lw, ly + 1);
+            doc.link(15, by, 180, ch, { url: linkUrl });
+
+            doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(...WHITE);
+            doc.text("Camp Asia holiday camps, Singapore", W / 2, H - 8, { align: "center" });
+            return doc.output("blob");
+        }
+
+        async function savePdfViaClaude(blob, fname) {
+            try {
+                const d = (window.claude && window.claude.use) ? await window.claude.use("downloads") : null;
+                if (!d) return false;
+                await d.save({ filename: fname, data: blob });
+                showToast("PDF SAVED");
+                return true;
+            } catch (e) { return !!(e && e.code === "declined"); }
+        }
+
+        function anchorDownload(blob, fname) {
+            try {
+                const u = URL.createObjectURL(blob), a = document.createElement("a");
+                a.href = u; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(() => URL.revokeObjectURL(u), 4000);
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function shareResultPdf() {
+            if (state.lastResult) track('share_pdf', { camp: state.lastResult.name, cat: catLabel(state.lastResult.category) });
+            if (!state.lastResult) return;
+            const btn = document.getElementById("share-btn"), label = btn.querySelector("span"), orig = label.textContent;
+            if (btn.dataset.busy) return;
+            btn.dataset.busy = "1"; label.textContent = "MAKING PDF...";
+            try {
+                if (!window.jspdf) throw new Error("PDF tool not loaded");
+                const blob = buildResultPdf();
+                const fname = "camp-asia-match-" + state.lastResult.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".pdf";
+                const file = new File([blob], fname, { type: "application/pdf" });
+                const text = "I\u2019m a match for " + state.lastResult.icon + " " + state.lastResult.name + " at Camp Asia! Take the quiz: " + quizLink();
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try { await navigator.share({ files: [file], title: "My Camp Asia Match!", text }); return; }
+                    catch (e) { if (e && e.name === "AbortError") return; }
+                }
+                if (await savePdfViaClaude(blob, fname)) return;
+                if (anchorDownload(blob, fname)) { showToast("PDF DOWNLOADED"); return; }
+                showToast("COULDN\u2019T SAVE THE PDF HERE");
+            } catch (e) { console.error(e); showToast("COULDN\u2019T MAKE THE PDF"); }
+            finally { label.textContent = orig; delete btn.dataset.busy; }
+        }
+        function forceCopyToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            textArea.setAttribute('readonly', '');
+            document.body.appendChild(textArea);
+            
+            const isiOSDevice = navigator.userAgent.match(/ipad|iphone/i);
+
+            if (isiOSDevice) {
+                const range = document.createRange();
+                range.selectNodeContents(textArea);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                textArea.setSelectionRange(0, 999999);
+            } else {
+                textArea.select();
+            }
+            
+            let successful = false;
+            try {
+                successful = document.execCommand('copy');
+            } catch (err) {
+                console.error('Unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+            return successful;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('share-toast');
+            toast.textContent = msg || 'DONE';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function handleBack() {
+            if (state.currentIdx > 0) {
+                const prev = state.history.pop();
+                state.catScores = prev.catScores;
+                state.campScores = prev.campScores;
+                state.currentIdx--;
+                showQuestion();
+            } else { 
+                document.getElementById('header-nav').classList.add('hidden');
+                document.getElementById('question-screen').classList.add('hidden');
+                document.getElementById('age-screen').classList.remove('hidden');
+                resetState();
+            }
+        }
+
+        function resetQuiz() {
+            track('restart');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            resetState();
+        }
+
+        // ===== EDITABLE DATA LAYER (saved edits override the built-in defaults above) =====
+        const TODDLER_IDS = ["multi_activity", "drama_academy", "lets_dance"];
+        const CATEGORIES = ["Multi Activity", "Get Physical", "Be Creative", "Clever Stuff", "Tech Savvy"];
+        const AGE_BANDS = [[3, 4], [5, 6], [7, 8], [9, 12], [13, 16]];
+        const SAVED = (() => { try { return JSON.parse(document.getElementById('camp-data').textContent); } catch (e) { return null; } })();
+        const DEFAULT_DATA = {
+            settings: { siteUrl: WEBSITE_URL, seasons: ["Winter break", "Spring break", "Summer break", "Fall break"], currentSeason: "", categoryNames: Object.fromEntries(CATEGORIES.map(k => [k, k])), showHiddenResult: true, showHiddenBackups: false, frontHeader: "", utmSource: "camp-quiz", analyticsUrl: "", gaId: "" },
+            camps: campDatabase.map(c => ({ ...c, active: true, seasons: [], toddler: TODDLER_IDS.includes(c.id), actions: [...(actionBank[c.id] || [])], toddlerAnswers: toddlerScenarios.map(s => s.a[c.id] || "") }))
+        };
+        const clone = o => JSON.parse(JSON.stringify(o));
+        let DATA = (SAVED && Array.isArray(SAVED.camps)) ? SAVED : clone(DEFAULT_DATA);
+        DATA.settings = { ...DEFAULT_DATA.settings, ...(DATA.settings || {}) };
+        DATA.settings.categoryNames = { ...DEFAULT_DATA.settings.categoryNames, ...(DATA.settings.categoryNames || {}) };
+        // Categories keep a fixed internal key; only the display name is editable
+        const catLabel = k => (DATA.settings.categoryNames[k] || k);
+        const camps = DATA.camps;
+        WEBSITE_URL = DATA.settings.siteUrl || WEBSITE_URL;
+        // A camp is live when it is not hidden and matches the current season (no season ticked = every season)
+        const isLive = (c, s) => { s = s || DATA.settings; return c.active !== false && (!s.currentSeason || !(c.seasons && c.seasons.length) || c.seasons.includes(s.currentSeason)); };
+
+        // ===== ADMIN EDITOR (only offered to people who can edit this page) =====
+        const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+        let draft = null, dirty = false, editIdx = -1, armed = null, msg = "", modalErr = "", jsonOpen = false, jsonText = "";
+        const waitClaude = () => new Promise(r => { let n = 0; (function t() { if (window.claude && window.claude.use) return r(window.claude); if (++n > 30) return r(null); setTimeout(t, 100); })(); });
+        const ageLabel = c => c.minAge === c.maxAge ? c.minAge : c.minAge + "–" + c.maxAge;
+
+        function openAdmin() {
+            if (!draft) draft = clone({ settings: DATA.settings, camps: DATA.camps });
+            let el = document.getElementById("adm");
+            if (!el) { el = document.createElement("div"); el.id = "adm"; document.body.appendChild(el); el.addEventListener("click", onAdmClick); el.addEventListener("change", onAdmChange); el.addEventListener("input", ev => { if (ev.target.id === "e-q") renderPal(); }); }
+            el.style.display = "block";
+            renderAdmin();
+        }
+
+        function renderAdmin() { renderAdminInner(); enhanceSelects(); }
+
+        // Swaps each plain dropdown for a themed one (the real select stays hidden and keeps the value)
+        function enhanceSelects() {
+            document.querySelectorAll("#adm select").forEach(sel => {
+                if (sel.dataset.dd) return;
+                sel.dataset.dd = "1"; sel.classList.add("dd-native");
+                const cur = sel.options[sel.selectedIndex], wrap = document.createElement("div");
+                wrap.className = "dd";
+                wrap.innerHTML = `<button type="button" class="dd-btn" data-a="ddToggle"><span class="dd-label">${esc(cur ? cur.text : "")}</span><span class="dd-chev"></span></button><div class="dd-list">${[...sel.options].map((o, i) => `<button type="button" class="dd-opt ${i === sel.selectedIndex ? "sel" : ""}" data-a="ddPick" data-i="${i}">${esc(o.text)}</button>`).join("")}</div>`;
+                sel.insertAdjacentElement("afterend", wrap);
+            });
+        }
+
+        function renderAdminInner() {
+            const s = draft.settings, el = document.getElementById("adm");
+            const cov = AGE_BANDS.map(([a, b]) => { const all = draft.camps.filter(c => c.minAge <= b && c.maxAge >= a && (a === 3 ? c.toddler : true)), n = all.filter(c => isLive(c, s)).length; return `<span class="adm-chip" style="background:${n === 0 ? '#fecaca' : n < 3 ? '#fde68a' : '#bbf7d0'}">${a}–${b} yrs: ${n} live / ${all.length}</span>`; }).join("");
+            const cards = draft.camps.map((c, i) => `<div class="adm-card ${isLive(c, s) ? '' : 'off'}">
+                <div style="font-size:1.5rem">${esc(c.icon)} <b style="font-size:1rem">${esc(c.name)}</b></div>
+                <span class="adm-chip">${esc(s.categoryNames[c.category] || c.category)}</span><span class="adm-chip">Ages ${ageLabel(c)}</span>${c.toddler ? '<span class="adm-chip">3–4 yrs quiz</span>' : ''}
+                ${c.active === false ? '<span class="adm-chip" style="background:#fecaca">Hidden</span>' : (isLive(c, s) ? '' : '<span class="adm-chip" style="background:#fde68a">Not this season</span>')}
+                ${(c.seasons || []).map(x => `<span class="adm-chip">${esc(x)}</span>`).join("")}
+                <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button data-a="edit" data-i="${i}">Edit</button><button data-a="dup" data-i="${i}">Duplicate</button><button data-a="toggle" data-i="${i}">${c.active === false ? 'Show' : 'Hide'}</button><button class="dng" data-a="del" data-i="${i}">Remove</button></div></div>`).join("");
+            el.innerHTML = `<div class="adm-bar"><h2>Camp editor</h2>${dirty ? '<span class="adm-chip" style="background:#fde68a">Unsaved changes</span>' : ''}
+                <button class="pri" data-a="save">Save &amp; publish</button><button data-a="dl">Download page</button><button data-a="json">Data (JSON)</button><button data-a="close">Close</button></div>
+                <div class="adm-wrap">${msg ? `<p class="adm-msg">${esc(msg)}</p>` : ""}
+                <div class="adm-card" style="margin-bottom:12px"><b>Season and website</b>
+                    <div class="adm-grid">
+                        <div><label>Season showing in the quiz</label><select data-f="currentSeason"><option value="">All seasons (no filtering)</option>${s.seasons.map(x => `<option ${x === s.currentSeason ? 'selected' : ''}>${esc(x)}</option>`).join("")}</select></div>
+                        <div><label>Season names (comma-separated)</label><input data-f="seasons" value="${esc(s.seasons.join(', '))}"></div>
+                        <div><label>Quiz link shared in the PDF (the page where people take this quiz)</label><input data-f="siteUrl" value="${esc(s.siteUrl)}"></div>
+                        ${CATEGORIES.map(k => `<div><label>Category name (originally “${esc(k)}”)</label><input data-f="cat:${esc(k)}" value="${esc(s.categoryNames[k] || k)}"></div>`).join("")}
+                    </div>
+                    <div style="margin-top:12px"><label>Front page header (shown above the quiz title; leave empty for a generic quiz)</label><input data-f="frontHeader" value="${esc(s.frontHeader || '')}" placeholder="e.g. Winter Camps 2026-27"></div>
+                    <div style="margin-top:12px"><label>Tracking tag added to camp links (utm_source). Leave empty to switch tracking off</label><input data-f="utmSource" value="${esc(s.utmSource === undefined ? 'camp-quiz' : s.utmSource)}" placeholder="camp-quiz"></div>
+                    <div style="margin-top:12px"><label>Analytics collector URL (Google Apps Script web app; leave empty to switch off)</label><input data-f="analyticsUrl" value="${esc(s.analyticsUrl || '')}" placeholder="https://script.google.com/macros/s/.../exec"></div>
+                    <div style="margin-top:12px"><label>Google Analytics ID (optional, looks like G-XXXXXXXXXX)</label><input data-f="gaId" value="${esc(s.gaId || '')}" placeholder="G-XXXXXXXXXX"></div>
+                    <label style="margin-top:12px"><input type="checkbox" data-fc="showHiddenResult" ${s.showHiddenResult !== false ? 'checked' : ''} style="width:auto"> Hidden camps can be the main result (marked “Not available this season”)</label>
+                    <label><input type="checkbox" data-fc="showHiddenBackups" ${s.showHiddenBackups === true ? 'checked' : ''} style="width:auto"> Hidden camps can appear as backup camps</label>
+                    <p style="margin-top:8px;font-size:.85rem">Camps per age group, live / total (red = none live, yellow = 1-2 live): ${cov}</p></div>
+                <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap"><button class="pri" data-a="add">+ Add camp</button><button class="dng" data-a="reset">Restore original camps</button></div>
+                <div class="adm-grid">${cards}</div></div>${editIdx >= 0 ? editModal() : ""}${jsonOpen ? `<div class="adm-ov"><div class="adm-modal"><b>Camp data (JSON)</b><p style="font-size:.85rem">Copy this as a backup, or paste edited data and import it.</p><textarea id="j-text" rows="16">${esc(jsonText)}</textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="pri" data-a="jsonImport">Import</button><button data-a="jsonClose">Close</button></div></div></div>` : ""}`;
+        }
+
+        const EMOJI_GROUPS = {
+            "Sports and moving": "⚽ 🏀 🏈 ⚾ 🎾 🏐 🏉 🥏 🎱 🏓 🏸 🏒 🏑 🥍 🏏 ⛳ 🏹 🎣 🤿 🥊 🥋 🛹 🛼 🛷 ⛸️ 🎿 🏂 🪂 🏋️ 🤸 🤾 🏊 🚴 🏃 🧗 🤺 🏇 🧘 🏆 🥇 🏅 🎯 🪁 🤹",
+            "Art, music and stage": "🎨 🖌️ 🖍️ ✏️ 📝 🎭 🎬 🎤 🎧 🎼 🎹 🥁 🎸 🎻 🎺 🎷 🪕 🪘 🪗 💃 🕺 📷 🧶 🧵 🪡 ✂️ 🪄 🎪 🎠 🎡 🎢 🎟️ 🖼️ 🏺 📚 📖 ✍️ 🎙️",
+            "Science and tech": "🔬 🧪 🧫 🧬 ⚗️ 🔭 🚀 🛰️ 🤖 💻 🖥️ ⌨️ 🖱️ 🎮 🕹️ 👾 🔌 🔋 💡 🔧 🔩 ⚙️ 🛠️ 🧲 📡 📱 🧮 🔢 ➕ ➗ 📐 📏 🩺 💉 🩹 🦠 🧠 🫀 🦴 🔎 🌡️ ⚡",
+            "Space, magic and fantasy": "🌟 ⭐ ✨ 🌈 🌙 🪐 ☄️ 👽 🛸 🦄 🐉 🧙 🧚 🧜 🧞 🧛 🦸 🦹 🥷 🏰 🗝️ 👑 💎 🔮 🎩 🎃 🏴‍☠️ 🧿",
+            "Animals and nature": "🦁 🐯 🐻 🐼 🐨 🐵 🐸 🐢 🐙 🦈 🐬 🐳 🦀 🐠 🦋 🐝 🐞 🦖 🦕 🐘 🦒 🦓 🦜 🦉 🦊 🐺 🐶 🐱 🐰 🐿️ 🦔 🌳 🌴 🌵 🌻 🌺 🍀 🍄 🌋 ⛰️ 🏝️ 🌊 🔥 ❄️ ☀️",
+            "Adventure and places": "🏕️ ⛺ 🧭 🗺️ 🎒 🔦 🪵 🛶 ⛵ 🚤 🚢 🚁 ✈️ 🚂 🚌 🚲 🛴 🏎️ 🏍️ 🚜 🏙️ 🌆 🗽 🏛️ 🏖️ 🌅 🎈 🎆 🎇 🏔️",
+            "Food and cooking": "👨‍🍳 👩‍🍳 🍳 🥞 🧁 🍰 🎂 🍪 🍩 🍦 🍕 🍔 🌮 🌯 🍣 🍜 🍝 🥗 🍎 🍓 🍉 🥕 🌽 🥑 🍞 🧀 🥨 🍿 🧃 🍯 🥄 🍴 🔪 🥣",
+            "Learning and business": "🔤 🔡 🅰️ 🌍 🌎 🗣️ 💬 📣 🇪🇸 🇫🇷 🇨🇳 🇯🇵 🏫 🎓 🧑‍🏫 💰 💵 🪙 💳 🏦 📈 📊 🛒 🏪 🤝 💼 📋 ⏰ 🧩 ♟️ 🎲 🔑",
+            "Fun and faces": "😀 😎 🤩 🥳 😜 🤗 😇 🤠 👻 💥 🎉 🎊 🎁 💯 ❤️ 🧡 💛 💚 💙 💜 🙌 👏 💪 🤟 ✌️ 👍 🫶 🐾"
+        };
+        const nk = s => s.replace(/\uFE0F/g, "");
+        const EMOJI_KW = new Map(("⚽ soccer football ball|🏀 basketball hoops|🏈 american football|⚾ baseball|🎾 tennis|🏐 volleyball|🏉 rugby|🥏 frisbee disc|🎱 pool billiards|🏓 ping pong table tennis|🏸 badminton|🏒 ice hockey|🏑 field hockey|🥍 lacrosse|🏏 cricket|⛳ golf|🏹 archery bow arrow|🎣 fishing|🤿 snorkel diving scuba|🥊 boxing|🥋 martial arts karate judo|🛹 skateboard|🛼 roller skate|🛷 sled|⛸ ice skating|🎿 ski|🏂 snowboard|🪂 parachute|🏋 weights gym lifting|🤸 gymnastics cartwheel|🤾 handball|🏊 swim swimming pool|🚴 cycling bike|🏃 run running parkour|🧗 climbing|🤺 fencing|🏇 horse riding|🧘 yoga|🏆 trophy winner|🥇 gold medal|🏅 medal|🎯 target darts|🪁 kite|🤹 juggling|🎨 art painting palette|🖌 paintbrush|🖍 crayon|✏ pencil draw|📝 write notes|🎭 drama theatre masks acting|🎬 film movie clapper|🎤 microphone sing|🎧 headphones music|🎼 music score|🎹 piano keyboard|🥁 drum|🎸 guitar|🎻 violin|🎺 trumpet|🎷 saxophone|🪕 banjo|🪘 conga drum|🪗 accordion|💃 dance dancer|🕺 dance disco|📷 camera photo|🧶 yarn knit|🧵 thread sewing|🪡 needle sew|✂ scissors craft|🪄 magic wand|🎪 circus tent|🎠 carousel|🎡 ferris wheel|🎢 roller coaster|🎟 ticket|🖼 picture frame gallery|🏺 pottery vase|📚 books|📖 book reading story|✍ writing|🎙 podcast microphone|🔬 microscope science|🧪 test tube experiment chemistry|🧫 petri dish|🧬 dna genetics|⚗ alembic chemistry|🔭 telescope astronomy|🚀 rocket space|🛰 satellite|🤖 robot|💻 laptop computer coding|🖥 desktop computer|⌨ keyboard|🖱 mouse|🎮 video game controller|🕹 joystick arcade|👾 alien game|🔌 plug electric circuit|🔋 battery|💡 idea light bulb|🔧 wrench tool|🔩 nut bolt|⚙ gear engineering|🛠 tools build maker|🧲 magnet|📡 antenna satellite dish|📱 phone app|🧮 abacus maths|🔢 numbers maths|➕ plus add|➗ divide maths|📐 triangle ruler geometry|📏 ruler measure|🩺 stethoscope doctor medic|💉 syringe|🩹 bandage first aid|🦠 germ microbe|🧠 brain|🫀 heart anatomy|🦴 bone skeleton|🔎 magnifying glass detective|🌡 thermometer|⚡ lightning electricity|🌟 star glow|⭐ star|✨ sparkles|🌈 rainbow|🌙 moon|🪐 planet saturn|☄ comet|👽 alien|🛸 ufo|🦄 unicorn|🐉 dragon|🧙 wizard|🧚 fairy|🧜 mermaid|🧞 genie|🧛 vampire|🦸 superhero|🦹 villain|🥷 ninja|🏰 castle|🗝 key|👑 crown king queen|💎 gem diamond|🔮 crystal ball|🎩 top hat magician|🎃 pumpkin|🏴‍☠️ pirate flag|🧿 evil eye|🦁 lion|🐯 tiger|🐻 bear|🐼 panda|🐨 koala|🐵 monkey|🐸 frog|🐢 turtle|🐙 octopus|🦈 shark|🐬 dolphin|🐳 whale|🦀 crab|🐠 fish tropical|🦋 butterfly|🐝 bee|🐞 ladybug|🦖 t-rex dinosaur|🦕 dinosaur|🐘 elephant|🦒 giraffe|🦓 zebra|🦜 parrot bird|🦉 owl|🦊 fox|🐺 wolf|🐶 dog puppy|🐱 cat kitten|🐰 rabbit bunny|🐿 squirrel|🦔 hedgehog|🌳 tree|🌴 palm tree|🌵 cactus desert|🌻 sunflower|🌺 flower hibiscus|🍀 clover luck|🍄 mushroom|🌋 volcano|⛰ mountain|🏝 island beach|🌊 wave ocean sea|🔥 fire|❄ snow snowflake|☀ sun sunny|🏕 camping camp|⛺ tent|🧭 compass explore|🗺 map|🎒 backpack|🔦 flashlight torch|🪵 log wood|🛶 canoe kayak|⛵ sailboat|🚤 speedboat|🚢 ship|🚁 helicopter|✈ airplane|🚂 train|🚌 bus|🚲 bicycle|🛴 scooter|🏎 race car|🏍 motorbike|🚜 tractor|🏙 city skyline|🌆 city dusk|🗽 statue of liberty new york|🏛 museum building|🏖 beach|🌅 sunrise|🎈 balloon party|🎆 fireworks|🎇 sparkler|🏔 snowy mountain|👨‍🍳 chef cook|👩‍🍳 chef cook|🍳 frying egg cooking|🥞 pancakes|🧁 cupcake baking|🍰 cake|🎂 birthday cake|🍪 cookie|🍩 donut|🍦 ice cream|🍕 pizza|🍔 burger|🌮 taco|🌯 burrito wrap|🍣 sushi|🍜 noodles ramen|🍝 pasta spaghetti|🥗 salad|🍎 apple|🍓 strawberry|🍉 watermelon|🥕 carrot|🌽 corn|🥑 avocado|🍞 bread baking|🧀 cheese|🥨 pretzel|🍿 popcorn|🧃 juice box|🍯 honey|🥄 spoon|🍴 fork knife|🔪 knife|🥣 bowl mixing|🔤 abc letters english|🔡 letters lowercase|🅰 letter a|🌍 world globe earth africa|🌎 world globe americas|🗣 speaking talk|💬 chat speech|📣 megaphone|🇪🇸 spanish spain|🇫🇷 french france|🇨🇳 chinese china mandarin|🇯🇵 japanese japan|🏫 school|🎓 graduation|🧑‍🏫 teacher|💰 money bag|💵 dollar cash|🪙 coin|💳 credit card|🏦 bank|📈 chart growth|📊 bar chart data|🛒 shopping cart|🏪 shop store|🤝 handshake deal|💼 briefcase business|📋 clipboard|⏰ alarm clock time|🧩 puzzle|♟ chess|🎲 dice game|🔑 key|😀 happy smile|😎 cool sunglasses|🤩 starstruck wow|🥳 party celebrate|😜 silly wink|🤗 hug|😇 angel|🤠 cowboy|👻 ghost|💥 boom explosion|🎉 party popper|🎊 confetti|🎁 gift present|💯 hundred|❤ heart red love|🧡 heart orange|💛 heart yellow|💚 heart green|💙 heart blue|💜 heart purple|🙌 hooray hands|👏 clap|💪 strong muscle|🤟 love you hand|✌ peace victory|👍 thumbs up|🫶 heart hands|🐾 paw prints").split("|").map(s => { const i = s.indexOf(" "); return [nk(s.slice(0, i)), s.slice(i + 1)]; }));
+        let palTab = "";
+        const palHtml = () => { palTab = ""; return `<div class="adm-pal" id="e-pal"><input id="e-q" placeholder="Search emojis, e.g. soccer, robot, cake" autocomplete="off"><div class="adm-tabs" id="e-tabs"><button type="button" class="tab on" data-a="palTab" data-g="">All</button>${Object.keys(EMOJI_GROUPS).map(g => `<button type="button" class="tab" data-a="palTab" data-g="${g}">${g}</button>`).join("")}</div><div class="adm-grid-em" id="e-grid"></div></div>`; };
+        function renderPal() {
+            const q = (document.getElementById("e-q").value || "").trim().toLowerCase(), words = q ? q.split(/\s+/) : [], out = [];
+            Object.entries(EMOJI_GROUPS).forEach(([name, s]) => {
+                if (palTab && !q && palTab !== name) return;
+                s.split(" ").forEach(e => { const kw = (EMOJI_KW.get(nk(e)) || "") + " " + name.toLowerCase(); if (words.every(w => kw.includes(w))) out.push(e); });
+            });
+            document.getElementById("e-grid").innerHTML = out.length ? [...new Set(out)].map(e => `<button type="button" class="em" data-a="pick" data-e="${e}">${e}</button>`).join("") : `<p style="padding:8px;font-size:.85rem">No emoji found. Try another word.</p>`;
+        }
+
+        function editModal() {
+            const c = draft.camps[editIdx], s = draft.settings;
+            return `<div class="adm-ov"><div class="adm-modal"><h3 style="font-family:'Bungee',Impact,sans-serif">${c._new ? "Add camp" : "Edit camp"}</h3>
+                <div class="adm-grid"><div><label>Camp name</label><input id="e-name" value="${esc(c.name)}"></div><div><label>Icon (tap Pick, or type or paste any emoji)</label><div style="display:flex;gap:6px"><input id="e-icon" value="${esc(c.icon)}" style="font-size:1.4rem"><button type="button" data-a="palToggle">Pick</button></div></div>
+                <div><label>Category</label><select id="e-cat">${CATEGORIES.map(x => `<option value="${esc(x)}" ${x === c.category ? "selected" : ""}>${esc(s.categoryNames[x] || x)}</option>`).join("")}</select></div>
+                <div><label>Minimum age</label><input id="e-min" type="number" min="3" max="16" value="${c.minAge}"></div><div><label>Maximum age</label><input id="e-max" type="number" min="3" max="16" value="${c.maxAge}"></div></div>
+                ${palHtml()}
+                <label>Camp web page URL</label><input id="e-url" value="${esc(c.url)}">
+                <label>Description (shown on the result)</label><textarea id="e-desc" rows="2">${esc(c.desc)}</textarea>
+                <label><input type="checkbox" id="e-active" ${c.active !== false ? "checked" : ""} style="width:auto"> Show in the quiz (untick to hide)</label>
+                <label><input type="checkbox" id="e-tod" ${c.toddler ? "checked" : ""} style="width:auto"> Offer in the 3–4 yrs quiz</label>
+                <label>Runs in (tick none = every season)</label><div>${s.seasons.map(x => `<label style="display:inline-block;margin-right:12px"><input type="checkbox" class="e-ssn" value="${esc(x)}" ${(c.seasons || []).includes(x) ? "checked" : ""} style="width:auto"> ${esc(x)}</label>`).join("")}</div>
+                <label>Quiz answers for this camp, one per line (questions 4–10 use lines 1–7)</label><textarea id="e-act" rows="7">${esc((c.actions || []).join("\n"))}</textarea>
+                <label>3–4 yrs answers, one per line (7 questions; used only if ticked above)</label><textarea id="e-ta" rows="7">${esc((c.toddlerAnswers || []).join("\n"))}</textarea>
+                <p class="adm-err" id="e-err"></p>
+                <div style="display:flex;gap:8px"><button class="pri" data-a="applyEdit">Apply</button><button data-a="cancelEdit">Cancel</button></div></div></div>`;
+        }
+
+        function applyEdit() {
+            const g = id => document.getElementById(id), c = draft.camps[editIdx];
+            const name = g("e-name").value.trim(), min = parseInt(g("e-min").value, 10), max = parseInt(g("e-max").value, 10), url = g("e-url").value.trim();
+            const fail = m => { g("e-err").textContent = m; return false; };
+            if (!name) return fail("Give the camp a name.");
+            if (!(min >= 3 && max <= 16 && min <= max)) return fail("Ages must be between 3 and 16, with the minimum no higher than the maximum.");
+            if (!/^https?:\/\/./.test(url)) return fail("Enter the full camp page URL, starting with https://");
+            const lines = v => { const a = v.split("\n").map(x => x.trim()); while (a.length && !a[a.length - 1]) a.pop(); return a; };
+            Object.assign(c, { name, icon: g("e-icon").value.trim() || "⭐", category: g("e-cat").value, minAge: min, maxAge: max, url, desc: g("e-desc").value.trim(), active: g("e-active").checked, toddler: g("e-tod").checked, seasons: [...document.querySelectorAll(".e-ssn:checked")].map(x => x.value), actions: lines(g("e-act").value), toddlerAnswers: lines(g("e-ta").value) });
+            delete c._new; editIdx = -1; dirty = true;
+            return true;
+        }
+
+        function onAdmChange(ev) {
+            const fc = ev.target.dataset && ev.target.dataset.fc;
+            if (fc) { draft.settings[fc] = ev.target.checked; dirty = true; renderAdmin(); return; }
+            const f = ev.target.dataset && ev.target.dataset.f; if (!f) return;
+            const s = draft.settings, v = ev.target.value;
+            if (f === "seasons") { s.seasons = v.split(",").map(x => x.trim()).filter(Boolean); draft.camps.forEach(c => c.seasons = (c.seasons || []).filter(x => s.seasons.includes(x))); if (!s.seasons.includes(s.currentSeason)) s.currentSeason = ""; }
+            else if (f.indexOf("cat:") === 0) s.categoryNames[f.slice(4)] = v.trim() || f.slice(4);
+            else s[f] = v.trim();
+            dirty = true; renderAdmin();
+        }
+
+        async function onAdmClick(ev) {
+            if (!ev.target.closest(".dd")) document.querySelectorAll("#adm .dd.open").forEach(x => x.classList.remove("open"));
+            const b = ev.target.closest("[data-a]"); if (!b) return;
+            const a = b.dataset.a, i = +b.dataset.i, key = a + i;
+            if ((a === "del" || a === "reset") && armed !== key) { armed = key; b.textContent = "Click again to confirm"; setTimeout(() => { if (armed === key) { armed = null; renderAdmin(); } }, 3000); return; }
+            armed = null; msg = "";
+            if (a === "palToggle") { const p = document.getElementById("e-pal"), open = p.style.display !== "block"; p.style.display = open ? "block" : "none"; if (open) renderPal(); return; }
+            if (a === "palTab") { palTab = b.dataset.g; document.querySelectorAll("#e-tabs .tab").forEach(t => t.classList.toggle("on", t === b)); renderPal(); return; }
+            if (a === "pick") { document.getElementById("e-icon").value = b.dataset.e; document.getElementById("e-pal").style.display = "none"; return; }
+            if (a === "ddToggle") { const dd = b.closest(".dd"), open = !dd.classList.contains("open"); document.querySelectorAll("#adm .dd.open").forEach(x => x.classList.remove("open")); if (open) dd.classList.add("open"); return; }
+            if (a === "ddPick") { const dd = b.closest(".dd"), sel = dd.previousElementSibling; sel.selectedIndex = i; dd.querySelector(".dd-label").textContent = sel.options[i].text; dd.querySelectorAll(".dd-opt").forEach((o, k) => o.classList.toggle("sel", k === i)); dd.classList.remove("open"); sel.dispatchEvent(new Event("change", { bubbles: true })); return; }
+            if (a === "close") { document.getElementById("adm").style.display = "none"; return; }
+            if (a === "toggle") { draft.camps[i].active = draft.camps[i].active === false; dirty = true; }
+            else if (a === "del") { draft.camps.splice(i, 1); dirty = true; }
+            else if (a === "reset") { draft.camps = clone(DEFAULT_DATA.camps); dirty = true; }
+            else if (a === "add") { draft.camps.unshift({ id: "c_" + Date.now().toString(36), name: "", icon: "⭐", category: CATEGORIES[0], minAge: 5, maxAge: 12, desc: "", url: "https://", active: true, seasons: [], toddler: false, actions: [], toddlerAnswers: [], _new: true }); editIdx = 0; }
+            else if (a === "dup") { const n = clone(draft.camps[i]); n.id = "c_" + Date.now().toString(36); n.name = n.name + " (copy)"; n._new = true; draft.camps.splice(i + 1, 0, n); editIdx = i + 1; }
+            else if (a === "edit") { editIdx = i; }
+            else if (a === "cancelEdit") { if (draft.camps[editIdx]._new) draft.camps.splice(editIdx, 1); editIdx = -1; }
+            else if (a === "applyEdit") { if (!applyEdit()) return; }
+            else if (a === "json") { jsonText = JSON.stringify({ settings: draft.settings, camps: draft.camps }, null, 1); jsonOpen = true; }
+            else if (a === "jsonClose") { jsonOpen = false; }
+            else if (a === "jsonImport") {
+                try { const p = JSON.parse(document.getElementById("j-text").value); if (!Array.isArray(p.camps)) throw 0; draft.camps = p.camps; if (p.settings) { draft.settings = { ...DEFAULT_DATA.settings, ...p.settings }; draft.settings.categoryNames = { ...DEFAULT_DATA.settings.categoryNames, ...(draft.settings.categoryNames || {}) }; } dirty = true; jsonOpen = false; msg = "Imported. Check the camps, then save."; }
+                catch (e) { msg = "That JSON couldn’t be read. Nothing was changed."; }
+            }
+            else if (a === "save") { await savePublish(); }
+            else if (a === "dl") { await downloadPage(); }
+            renderAdmin();
+        }
+
+        // Rebuilds the whole quiz page from its source pieces plus the edited camp data
+        function buildHtml() {
+            const data = JSON.stringify({ settings: draft.settings, camps: draft.camps.map(({ _new, ...c }) => c) }).replace(/</g, "\\u003c");
+            return "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n" + PAGE_HEAD + "\n<style data-keep>" + PAGE_CSS + "</style>\n</head>\n<body>\n" + PAGE_BODY + "\n<script type=\"application/json\" id=\"camp-data\">" + data + "<\/script>\n<script id=\"main-script\">" + PAGE_JS + "<\/script>\n</body>\n</html>";
+        }
+
+        async function savePublish() {
+            const cl = await waitClaude(); let art = null;
+            try { art = cl && await cl.use("artifact"); } catch (e) {}
+            if (!art) { msg = "Publishing isn’t available in this view. Use Download page to keep your changes."; return; }
+            try { await art.publish(buildHtml()); dirty = false; msg = "Published. The quiz now uses your changes."; }
+            catch (e) { msg = (e && e.code === "not_writer") ? "This account can view the quiz but not change it." : "Couldn’t publish (" + ((e && (e.code || e.message)) || "unknown error") + "). Use Download page to keep your changes."; }
+        }
+
+        async function downloadPage() {
+            try { const cl = await waitClaude(); const d = cl && await cl.use("downloads"); if (!d) throw {}; await d.save({ filename: "camp-asia-quiz.html", data: buildHtml() }); msg = ""; }
+            catch (e) { msg = (e && e.code === "declined") ? "" : "Download isn’t available in this view. Use Data (JSON) to copy your camps instead."; }
+        }
+
+        async function initAdmin() {
+            try {
+                const cl = await waitClaude(); if (!cl) return;
+                const u = await cl.use("user"); if (!u || !(await u.canEdit())) return;
+                const b = document.createElement("button"); b.className = "adm-open"; b.textContent = "⚙ Edit camps"; b.onclick = openAdmin; document.body.appendChild(b);
+                if (location.hash === "#admin") openAdmin();
+            } catch (e) {}
+        }
+        function applyFrontHeader() {
+            const h = (DATA.settings.frontHeader || "").trim();
+            document.getElementById("front-header").textContent = h;
+            document.getElementById("front-wrap").classList.toggle("hidden", !h);
+        }
+        // ===== USAGE ANALYTICS (anonymous; only sends data if a collector URL or Google Analytics ID is set in the editor) =====
+        const SESSION_ID = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+        function trackRef() {
+            try {
+                const q = new URLSearchParams(location.search).get("utm_source");
+                if (q) return q.slice(0, 40);
+                return document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, "") : "direct";
+            } catch (e) { return ""; }
+        }
+        function track(ev, d) {
+            try {
+                const s = DATA.settings;
+                const p = Object.assign({ ev: ev, sid: SESSION_ID, season: String(s.frontHeader || ""), dev: (window.matchMedia && window.matchMedia("(max-width: 767px)").matches) ? "mobile" : "desktop", ref: trackRef() }, d || {});
+                const url = String(s.analyticsUrl || "").trim();
+                if (/^https:\/\//i.test(url)) {
+                    const body = JSON.stringify(p);
+                    let sent = false;
+                    try { sent = navigator.sendBeacon ? navigator.sendBeacon(url, new Blob([body], { type: "text/plain" })) : false; } catch (e) {}
+                    if (!sent) fetch(url, { method: "POST", mode: "no-cors", body: body }).catch(() => {});
+                }
+                if (window.gtag) window.gtag("event", "camp_quiz_" + ev, { age_group: p.age, camp: p.camp, category: p.cat, season: p.season });
+            } catch (e) {}
+        }
+        function initGA() {
+            const id = String(DATA.settings.gaId || "").trim();
+            if (!/^G-[A-Z0-9]{4,}$/i.test(id) || window.claude) return;
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = function () { window.dataLayer.push(arguments); };
+            const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + id; document.head.appendChild(sc);
+            window.gtag("js", new Date()); window.gtag("config", id);
+        }
+
+        applyFrontHeader();
+        initGA();
+        track("open");
+        initAdmin();
+
+        resetState();
+    </script>
+</body>
+</html>
